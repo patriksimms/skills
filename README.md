@@ -16,10 +16,22 @@ These skills help you think through problems before writing code.
 npx skills@latest add patriksimms/skills/write-a-prd
 ```
 
+* write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD project.
+
+```sh
+npx skills@latest add patriksimms/skills/write-a-prd-linear
+```
+
 * prd-to-issues — Break a PRD into independently-grabbable GitHub issues using vertical slices.
 
 ```sh
 npx skills@latest add patriksimms/skills/prd-to-issues
+```
+
+* prd-to-issues-linear — Break a PRD into independently linear issues using vertical slices.
+
+```sh
+npx skills@latest add patriksimms/skills/prd-to-issues-linear
 ```
 
 * grill-me - Get relentlessly interviewed about a plan or design until every branch of the decision tree is resolved.
