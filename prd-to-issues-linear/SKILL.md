@@ -1,5 +1,5 @@
 ---
-name: prd-to-issues
+name: prd-to-issues-linear
 description: Break a PRD into independently-grabbable linear tasks using tracer-bullet vertical slices. Use when user wants to convert a PRD to issues, create implementation tickets, or break down a PRD into work items.
 ---
 
