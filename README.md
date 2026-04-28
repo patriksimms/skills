@@ -45,3 +45,9 @@ npx skills@latest add patriksimms/skills/grill-me
 ```sh
 npx skills@latest add patriksimms/skills/tdd-ralph
 ```
+
+* triage-issue - Investigate a bug by exploring the codebase, identify the root cause, and file a Linear issue with a TDD-based fix plan.
+
+```sh
+npx skills@latest add patriksimms/skills/triage-issue
+```
