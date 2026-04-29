@@ -22,7 +22,7 @@ npx skills@latest add patriksimms/skills/write-a-prd
 npx skills@latest add patriksimms/skills/write-a-prd-linear
 ```
 
-* prd-to-issues — Break a PRD into independently-grabbable GitHub issues using vertical slices. Creates linear sub issues
+* prd-to-issues — Break a PRD into independently-grabbable GitHub issues using vertical slices. Creates linear sub
 
 ```sh
 npx skills@latest add patriksimms/skills/prd-to-issues
@@ -58,6 +58,14 @@ in ralph.sh a shell lives that can work with linear issues tagged with `agent-ta
 
 ### Usage
 
+Install
+```sh
+git clone git@github.com:patriksimms/skills.git
+cd skills
+install -m 755 ralph-linear.sh ~/.local/bin/ralph-linear
+```
+
+Set in your projects folder environment, e.g. with https://direnv.net/
 ```sh
 export LINEAR_TEAM_KEY="${LINEAR_TEAM_KEY:-EE}"
 export LINEAR_PROJECT_LABEL="${LINEAR_PROJECT_LABEL:-<project-name>}"
@@ -68,4 +76,6 @@ export LINEAR_DONE_STATE="${LINEAR_DONE_STATE:-Done}"
 export LINEAR_ISSUE_LIMIT="${LINEAR_ISSUE_LIMIT:-250}"
 export LINEAR_RETRY_ATTEMPTS="${LINEAR_RETRY_ATTEMPTS:-3}"
 export LINEAR_RETRY_DELAY_SECONDS="${LINEAR_RETRY_DELAY_SECONDS:-1}"
+
+ralph-linear
 ```
