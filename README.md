@@ -77,5 +77,5 @@ export LINEAR_ISSUE_LIMIT="${LINEAR_ISSUE_LIMIT:-250}"
 export LINEAR_RETRY_ATTEMPTS="${LINEAR_RETRY_ATTEMPTS:-3}"
 export LINEAR_RETRY_DELAY_SECONDS="${LINEAR_RETRY_DELAY_SECONDS:-1}"
 
-ralph-linear
+ralph-linear 2 # max iterations 
 ```
