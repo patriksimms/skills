@@ -11,9 +11,9 @@ Break a PRD into independently-grabbable linear tasks using vertical slices (tra
 
 ### 1. Locate the PRD
 
-Ask the user for the PRD linear project id (or URL).
+Ask the user for the PRD linear task id (or URL).
 
-If the PRD is not already in your context window, fetch it with `linctl project get <id>` (with comments).
+If the PRD is not already in your context window, fetch it with `linctl issue get <id>` (with comments).
 
 ### 2. Explore the codebase (optional)
 
@@ -51,7 +51,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Create the linear issues
 
-For each approved slice, create a linear task using `linctl issue create`. Use the `agent-task` label. Use the issue body template below.
+For each approved slice, create a linear task using `linctl issue create`. Use the `agent-task` label. Use the issue body template below. Add a parent relation with `linctl issue update --parent EE-<ID>`
 
 Create issues in dependency order (blockers first) so you can reference real issue numbers in the "Blocked by" field.
 

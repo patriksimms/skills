@@ -16,13 +16,13 @@ These skills help you think through problems before writing code.
 npx skills@latest add patriksimms/skills/write-a-prd
 ```
 
-* write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD project.
+* write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD issue.
 
 ```sh
 npx skills@latest add patriksimms/skills/write-a-prd-linear
 ```
 
-* prd-to-issues — Break a PRD into independently-grabbable GitHub issues using vertical slices.
+* prd-to-issues — Break a PRD into independently-grabbable GitHub issues using vertical slices. Creates linear sub issues
 
 ```sh
 npx skills@latest add patriksimms/skills/prd-to-issues
@@ -54,7 +54,7 @@ npx skills@latest add patriksimms/skills/triage-issue
 
 ## Ralph
 
-in ralph.sh a shell lives that can work with linear issues tagged with `agent-task` in a specific project directory. 
+in ralph.sh a shell lives that can work with linear issues tagged with `agent-task` in a specific git project directory. 
 
 ### Usage
 
