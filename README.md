@@ -51,3 +51,21 @@ npx skills@latest add patriksimms/skills/tdd-ralph
 ```sh
 npx skills@latest add patriksimms/skills/triage-issue
 ```
+
+## Ralph
+
+in ralph.sh a shell lives that can work with linear issues tagged with `agent-task` in a specific project directory. 
+
+### Usage
+
+```sh
+export LINEAR_TEAM_KEY="${LINEAR_TEAM_KEY:-EE}"
+export LINEAR_PROJECT_LABEL="${LINEAR_PROJECT_LABEL:-<project-name>}"
+
+# optional
+export LINEAR_AGENT_LABEL="${LINEAR_AGENT_LABEL:-agent-task}"
+export LINEAR_DONE_STATE="${LINEAR_DONE_STATE:-Done}"
+export LINEAR_ISSUE_LIMIT="${LINEAR_ISSUE_LIMIT:-250}"
+export LINEAR_RETRY_ATTEMPTS="${LINEAR_RETRY_ATTEMPTS:-3}"
+export LINEAR_RETRY_DELAY_SECONDS="${LINEAR_RETRY_DELAY_SECONDS:-1}"
+```
