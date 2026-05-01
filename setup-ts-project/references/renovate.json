@@ -1,0 +1,61 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>devops/renovate"
+  ],
+  "assignees": ["patrik.simms"],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "recreateWhen": "always",
+    "rebaseWhen": "conflicted",
+    "branchTopic": "lock-file-maintenance",
+    "commitMessageAction": "Lock file maintenance",
+    "schedule": [
+      "before 4pm on monday"
+    ],
+    "prBodyDefinitions": {
+      "Change": "All locks refreshed"
+    }
+  },
+  "packageRules": [
+    {
+      "description": "Group React ecosystem packages into one MR",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "groupName": "React ecosystem"
+    },
+    {
+      "description": "Group Vite tooling packages into one MR",
+      "matchPackageNames": [
+        "vite",
+        "@vitejs/plugin-react-swc"
+      ],
+      "groupName": "Vite and TypeScript tooling"
+    },
+    {
+      "description": "Group Tailwind ecosystem packages into one MR",
+      "matchPackageNames": [
+        "tailwindcss",
+        "@tailwindcss/typography",
+        "autoprefixer",
+        "daisyui"
+      ],
+      "groupName": "Tailwind ecosystem"
+    },
+    {
+      "description": "Automerge patch updates",
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Require approval for minor and major updates",
+      "matchUpdateTypes": ["minor", "major"],
+      "automerge": false
+    }
+  ]
+}

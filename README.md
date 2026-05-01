@@ -52,6 +52,12 @@ npx skills@latest add patriksimms/skills/tdd-ralph
 npx skills@latest add patriksimms/skills/triage-issue
 ```
 
+* setup-ts-project - Add development tooling like testing, formatting, linting, CI, database, docker and renovate for typescript project.
+
+```sh
+npx skills@latest add patriksimms/skills/setup-ts-project
+```
+
 ## Ralph
 
 in ralph.sh a shell lives that can work with linear issues tagged with `agent-task` in a specific git project directory. 
