@@ -69,6 +69,7 @@ Install
 git clone git@github.com:patriksimms/skills.git
 cd skills
 install -m 755 ralph-linear.sh ~/.local/bin/ralph-linear
+install -m 755 ralph-linear-codex.sh ~/.local/bin/ralph-linear-codex
 ```
 
 Set in your projects folder environment, e.g. with https://direnv.net/
@@ -84,4 +85,20 @@ export LINEAR_RETRY_ATTEMPTS="${LINEAR_RETRY_ATTEMPTS:-3}"
 export LINEAR_RETRY_DELAY_SECONDS="${LINEAR_RETRY_DELAY_SECONDS:-1}"
 
 ralph-linear 2 # max iterations 
+```
+
+### Codex CLI version
+
+`ralph-linear-codex` uses `codex exec` instead of Claude. The worker run streams Codex output directly to the terminal and writes the final assistant message to a temp file so the loop can detect `<promise>COMPLETE</promise>`.
+
+Optional Codex settings:
+
+```sh
+export CODEX_BIN="${CODEX_BIN:-codex}"
+export CODEX_MODEL="${CODEX_MODEL:-}"
+export CODEX_PROFILE="${CODEX_PROFILE:-}"
+export CODEX_SANDBOX="${CODEX_SANDBOX:-danger-full-access}"
+export CODEX_APPROVAL_POLICY="${CODEX_APPROVAL_POLICY:-never}"
+
+ralph-linear-codex 2 # max iterations
 ```
