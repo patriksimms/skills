@@ -96,9 +96,19 @@ Optional Codex settings:
 ```sh
 export CODEX_BIN="${CODEX_BIN:-codex}"
 export CODEX_MODEL="${CODEX_MODEL:-}"
+export CODEX_REASONING_EFFORT="${CODEX_REASONING_EFFORT:-}"
 export CODEX_PROFILE="${CODEX_PROFILE:-}"
 export CODEX_SANDBOX="${CODEX_SANDBOX:-danger-full-access}"
 export CODEX_APPROVAL_POLICY="${CODEX_APPROVAL_POLICY:-never}"
 
 ralph-linear-codex 2 # max iterations
 ```
+
+For example, to run GPT-5.5 with low reasoning:
+
+```sh
+export CODEX_MODEL="gpt-5.5"
+export CODEX_REASONING_EFFORT="low"
+```
+
+This maps to Codex CLI's `model_reasoning_effort` config key.

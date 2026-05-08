@@ -10,6 +10,7 @@ LINEAR_RETRY_ATTEMPTS="${LINEAR_RETRY_ATTEMPTS:-3}"
 LINEAR_RETRY_DELAY_SECONDS="${LINEAR_RETRY_DELAY_SECONDS:-1}"
 CODEX_BIN="${CODEX_BIN:-codex}"
 CODEX_MODEL="${CODEX_MODEL:-}"
+CODEX_REASONING_EFFORT="${CODEX_REASONING_EFFORT:-}"
 CODEX_PROFILE="${CODEX_PROFILE:-}"
 CODEX_SANDBOX="${CODEX_SANDBOX:-danger-full-access}"
 CODEX_APPROVAL_POLICY="${CODEX_APPROVAL_POLICY:-never}"
@@ -60,6 +61,10 @@ codex_exec_args() {
 
   if [ -n "$CODEX_MODEL" ]; then
     printf '%s\0' -m "$CODEX_MODEL"
+  fi
+
+  if [ -n "$CODEX_REASONING_EFFORT" ]; then
+    printf '%s\0' -c "model_reasoning_effort=\"$CODEX_REASONING_EFFORT\""
   fi
 
   if [ -n "$CODEX_PROFILE" ]; then
