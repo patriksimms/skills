@@ -46,10 +46,16 @@ npx skills@latest add patriksimms/skills/grill-me
 npx skills@latest add patriksimms/skills/tdd-ralph
 ```
 
-* triage-issue - Investigate a bug by exploring the codebase, identify the root cause, and file a Linear issue with a TDD-based fix plan.
+* triage-issue-linear - Investigate a bug by exploring the codebase, identify the root cause, and file a Linear issue with a TDD-based fix plan.
 
 ```sh
-npx skills@latest add patriksimms/skills/triage-issue
+npx skills@latest add patriksimms/skills/triage-issue-linear
+```
+
+* triage-issue-todoist - Investigate a bug by exploring the codebase, identify the root cause, and file a todoist task with a TDD-based fix plan.
+
+```sh
+npx skills@latest add patriksimms/skills/triage-issue-todoist
 ```
 
 * setup-ts-project - Add development tooling like testing, formatting, linting, CI, database, docker and renovate for typescript project.
