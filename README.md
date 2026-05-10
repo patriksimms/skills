@@ -2,7 +2,7 @@
 
 A collection of agent skills that extend capabilities across planning, development, and tooling.
 
-The skills use the `td` cli for using todoist as a task management tool instead of github issues 
+The skills use the `td` cli for using todoist or linear as a task management tool instead of github issues 
 
 > This is heavily inspired from https://github.com/mattpocock/skills
 
@@ -10,10 +10,10 @@ The skills use the `td` cli for using todoist as a task management tool instead 
 
 These skills help you think through problems before writing code.
 
-* write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a todoist PRD issue.
+* write-a-prd-todoist — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a todoist PRD issue.
 
 ```sh
-npx skills@latest add patriksimms/skills/write-a-prd
+npx skills@latest add patriksimms/skills/write-a-prd-todoist
 ```
 
 * write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD issue.
@@ -22,10 +22,10 @@ npx skills@latest add patriksimms/skills/write-a-prd
 npx skills@latest add patriksimms/skills/write-a-prd-linear
 ```
 
-* prd-to-issues — Break a PRD into independently-grabbable GitHub issues using vertical slices. Creates linear sub
+* prd-to-issues — Break a PRD into independently-grabbable todoist tasks using vertical slices. Creates linear sub
 
 ```sh
-npx skills@latest add patriksimms/skills/prd-to-issues
+npx skills@latest add patriksimms/skills/prd-to-issues-todoist
 ```
 
 * prd-to-issues-linear — Break a PRD into independently linear issues using vertical slices.

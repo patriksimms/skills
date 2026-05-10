@@ -1,5 +1,5 @@
 ---
-name: prd-to-issues
+name: prd-to-issues-todoist
 description: Break a PRD into independently-grabbable todoist tasks using tracer-bullet vertical slices. Use when user wants to convert a PRD to issues, create implementation tickets, or break down a PRD into work items.
 ---
 
