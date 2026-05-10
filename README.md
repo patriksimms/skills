@@ -76,6 +76,7 @@ git clone git@github.com:patriksimms/skills.git
 cd skills
 install -m 755 ralph-linear.sh ~/.local/bin/ralph-linear
 install -m 755 ralph-linear-codex.sh ~/.local/bin/ralph-linear-codex
+install -m 755 ralph-todoist-codex.sh ~/.local/bin/ralph-todoist-codex
 ```
 
 Set in your projects folder environment, e.g. with https://direnv.net/
@@ -118,3 +119,24 @@ export CODEX_REASONING_EFFORT="low"
 ```
 
 This maps to Codex CLI's `model_reasoning_effort` config key.
+
+### Todoist Codex CLI version
+
+`ralph-todoist-codex` uses `td task list` to fetch open Todoist tasks and `td task complete` when Codex emits the completion marker.
+
+Required/default Todoist settings:
+
+```sh
+export TODOIST_AGENT_LABEL="${TODOIST_AGENT_LABEL:-agent-task}"
+
+# optional filters
+export TODOIST_PROJECT="${TODOIST_PROJECT:-}"
+export TODOIST_PROJECT_LABEL="${TODOIST_PROJECT_LABEL:-}"
+export TODOIST_TASK_LIMIT="${TODOIST_TASK_LIMIT:-250}"
+export TODOIST_RETRY_ATTEMPTS="${TODOIST_RETRY_ATTEMPTS:-3}"
+export TODOIST_RETRY_DELAY_SECONDS="${TODOIST_RETRY_DELAY_SECONDS:-1}"
+
+ralph-todoist-codex 2 # max iterations
+```
+
+Todoist task dependencies are read from a `## Blocked by` section containing `#<todoist-task-id>` references. Tasks with unresolved blockers are skipped.
