@@ -26,13 +26,69 @@ glab auth status
 glab repo view
 ```
 
-Prefer `glab work-items create` when available:
+Create the work item in the `Backlog` status, not the default `To do` status. The `glab work-items create` command does not currently expose a status flag, so prefer the GraphQL `createIssue` mutation and pass the `Backlog` status ID explicitly.
 
 ```sh
-glab work-items create --type issue --title "<PRD title>" --description "$(cat /tmp/prd.md)"
+PROJECT_PATH="$(glab repo view -F json | jq -r '.fullPath // .full_path // .path_with_namespace')"
+
+BACKLOG_STATUS_ID="$(
+  glab api graphql \
+    -f query='
+      query($fullPath: ID!, $name: IssueType) {
+        workspace: namespace(fullPath: $fullPath) {
+          workItemTypes(name: $name) {
+            nodes {
+              widgetDefinitions {
+                type
+                ... on WorkItemWidgetDefinitionStatus {
+                  allowedStatuses {
+                    id
+                    name
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ' \
+    -F fullPath="$PROJECT_PATH" \
+    -F name=ISSUE |
+    jq -r '
+      .data.workspace.workItemTypes.nodes[0].widgetDefinitions[]
+      | select(.type == "STATUS")
+      | .allowedStatuses[]
+      | select((.name | ascii_downcase) == "backlog")
+      | .id
+    '
+)"
+
+test -n "$BACKLOG_STATUS_ID"
+
+glab api graphql \
+  -f query='
+    mutation($projectPath: ID!, $title: String!, $description: String!, $statusId: WorkItemsStatusesStatusID!) {
+      createIssue(input: {
+        projectPath: $projectPath,
+        title: $title,
+        description: $description,
+        type: ISSUE,
+        statusId: $statusId
+      }) {
+        issue {
+          webUrl
+        }
+        errors
+      }
+    }
+  ' \
+  -F projectPath="$PROJECT_PATH" \
+  -F title="<PRD title>" \
+  -F description="$(cat /tmp/prd.md)" \
+  -F statusId="$BACKLOG_STATUS_ID"
 ```
 
-Use `--repo <group/project>` if the current directory is not the intended project. If the installed `glab` version does not support `work-items create`, use `glab issue create --title "<PRD title>" --description "$(cat /tmp/prd.md)" --yes` as the closest current-project work item equivalent, and tell the user that their `glab` version lacks the experimental work item create command.
+Pass `<group/project>` to `glab repo view` if the current directory is not the intended project, then set `PROJECT_PATH` to that full path before running the GraphQL calls. If the project does not expose a `Backlog` status, stop and tell the user instead of creating the PRD in `To do`.
 
 <prd-template>
 
