@@ -27,7 +27,8 @@ description:
 ## Steps
 
 1. Identify current branch and confirm remote state.
-2. Run local validation (`make -C elixir all`) before pushing.
+2. Run local validation (`cd ~/projects/symphony && go test ./...`) before
+   pushing when working on Symphony.
 3. Push branch to `origin` with upstream tracking if needed, using whatever
    remote URL is already configured.
 4. If push is not clean/rejected:
@@ -69,8 +70,8 @@ description:
 # Identify branch
 branch=$(git branch --show-current)
 
-# Minimal validation gate
-make -C elixir all
+# Minimal validation gate for Symphony
+(cd ~/projects/symphony && go test ./...)
 
 # Initial push: respect the current origin remote.
 git push -u origin HEAD

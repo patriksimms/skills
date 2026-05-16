@@ -80,7 +80,7 @@ npx skills@latest add patriksimms/skills/commit
 npx skills@latest add patriksimms/skills/debug
 ```
 
-* land - Land a PR by monitoring conflicts, resolving them, waiting for checks, and squash-merging when green.
+* land - Land an MR by monitoring conflicts, resolving them, waiting for checks, and squash-merging when green.
 
 ```sh
 npx skills@latest add patriksimms/skills/land
@@ -92,7 +92,7 @@ npx skills@latest add patriksimms/skills/land
 npx skills@latest add patriksimms/skills/pull
 ```
 
-* push - Push current branch changes to origin and create or update the corresponding pull request.
+* push - Push current branch changes to origin and create or update the corresponding merge request.
 
 ```sh
 npx skills@latest add patriksimms/skills/push

@@ -16,11 +16,16 @@ description:
 
 ## Log Sources
 
-- Primary runtime log: `log/symphony.log`
-  - Default comes from `SymphonyElixir.LogFile` (`log/symphony.log`).
-  - Includes orchestrator, agent runner, and Codex app-server lifecycle logs.
-- Rotated runtime logs: `log/symphony.log*`
-  - Check these when the relevant run is older.
+- Symphony implementation: `~/projects/symphony`
+- Primary runtime logs:
+  - Symphony is a Go daemon that logs to stderr by default.
+  - Inspect the terminal, service manager, or redirected file used to run:
+    `cd ~/projects/symphony && go run ./cmd/symphony --workflow ./WORKFLOW.md`
+- Redirected runtime logs:
+  - If the daemon is run with redirection, inspect that file and any rotated
+    variants.
+  - Common local fallback: `~/projects/symphony/log/symphony.log*` if you have
+    configured redirection there.
 
 ## Correlation Keys
 
@@ -32,8 +37,9 @@ description:
 - `project_id` / `project_path`: GitLab project identity
 - `session_id`: Codex thread-turn pair (`<thread_id>-<turn_id>`)
 
-`elixir/docs/logging.md` requires issue/MR/session fields for lifecycle logs.
-Use whichever identifiers are present as join keys during debugging.
+`~/projects/symphony/resources/spec.md` defines the expected work-item and
+session log context fields. Use whichever identifiers are present as join keys
+during debugging.
 
 ## Quick Triage (Stuck Run)
 
@@ -49,23 +55,26 @@ Use whichever identifiers are present as join keys during debugging.
 ## Commands
 
 ```bash
+# 0) Work from the Symphony implementation
+cd ~/projects/symphony
+
 # 1) Narrow by GitLab MR IID when debugging an MR run
-rg -n "merge_request_iid=123" log/symphony.log*
+rg -n "merge_request_iid=123" <symphony-log-file>
 
 # 2) Narrow by ticket key when debugging an issue run
-rg -n "issue_identifier=MT-625" log/symphony.log*
+rg -n "issue_identifier=MT-625" <symphony-log-file>
 
 # 3) If needed, narrow by GitLab issue IID, project, or mirrored issue UUID
-rg -n "issue_id=<issue-id>|project_path=<group/project>" log/symphony.log*
+rg -n "issue_id=<issue-id>|project_path=<group/project>" <symphony-log-file>
 
 # 4) Pull session IDs seen for that ticket/MR
-rg -o "session_id=[^ ;]+" log/symphony.log* | sort -u
+rg -o "session_id=[^ ;]+" <symphony-log-file> | sort -u
 
 # 5) Trace one session end-to-end
-rg -n "session_id=<thread>-<turn>" log/symphony.log*
+rg -n "session_id=<thread>-<turn>" <symphony-log-file>
 
 # 6) Focus on stuck/retry signals
-rg -n "Issue stalled|scheduling retry|turn_timeout|turn_failed|Codex session failed|Codex session ended with error" log/symphony.log*
+rg -n "Issue stalled|scheduling retry|turn_timeout|turn_failed|Codex session failed|Codex session ended with error" <symphony-log-file>
 ```
 
 ## Investigation Flow
@@ -95,7 +104,7 @@ rg -n "Issue stalled|scheduling retry|turn_timeout|turn_failed|Codex session fai
 
 ## Reading Codex Session Logs
 
-In Symphony, Codex session diagnostics are emitted into `log/symphony.log` and
+In Symphony, Codex session diagnostics are emitted by the Go daemon logger and
 keyed by `session_id`. Read them as a lifecycle:
 
 1. `Codex session started ... session_id=...`
@@ -109,7 +118,7 @@ For one specific session investigation, keep the trace narrow:
 
 1. Capture one `session_id` for the ticket.
 2. Build a timestamped slice for only that session:
-    - `rg -n "session_id=<thread>-<turn>" log/symphony.log*`
+    - `rg -n "session_id=<thread>-<turn>" <symphony-log-file>`
 3. Mark the exact failing stage:
     - Startup failure before stream events (`Codex session failed ...`).
     - Turn/runtime failure after stream events (`turn_*` / `ended with error`).
@@ -123,6 +132,7 @@ avoid mixing concurrent runs.
 ## Notes
 
 - Prefer `rg` over `grep` for speed on large logs.
-- Check rotated logs (`log/symphony.log*`) before concluding data is missing.
+- Check the service manager logs or rotated redirected logs before concluding
+  data is missing.
 - If required context fields are missing in new log statements, align with
-  `elixir/docs/logging.md` conventions.
+  `~/projects/symphony/resources/spec.md` conventions.
