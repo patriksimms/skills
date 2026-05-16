@@ -70,6 +70,12 @@ npx skills@latest add patriksimms/skills/triage-issue-linear
 npx skills@latest add patriksimms/skills/triage-issue-todoist
 ```
 
+* triage-issue-gitlab - Investigate a bug by exploring the codebase, identify the root cause, and file a GitLab work item with a TDD-based fix plan.
+
+```sh
+npx skills@latest add patriksimms/skills/triage-issue-gitlab
+```
+
 * setup-ts-project - Add development tooling like testing, formatting, linting, CI, database, docker and renovate for typescript project.
 
 ```sh
