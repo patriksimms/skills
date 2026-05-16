@@ -46,6 +46,12 @@ npx skills@latest add patriksimms/skills/prd-to-issues-linear
 npx skills@latest add patriksimms/skills/grill-me
 ```
 
+* grill-with-docs - Stress-test a plan against the project's domain language and documented decisions, updating `CONTEXT.md` and ADRs as decisions crystallise.
+
+```sh
+npx skills@latest add patriksimms/skills/grill-with-docs
+```
+
 * tdd-ralph - Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time. Can work AFK in a ralph loop
 
 ```sh
