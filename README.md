@@ -64,6 +64,40 @@ npx skills@latest add patriksimms/skills/triage-issue-todoist
 npx skills@latest add patriksimms/skills/setup-ts-project
 ```
 
+## Development Workflow
+
+These skills help with day-to-day git and debugging workflows.
+
+* commit - Create a well-formed git commit from current changes using session history for rationale and summary.
+
+```sh
+npx skills@latest add patriksimms/skills/commit
+```
+
+* debug - Investigate stuck runs and execution failures by tracing Symphony and Codex logs with issue/session identifiers.
+
+```sh
+npx skills@latest add patriksimms/skills/debug
+```
+
+* land - Land a PR by monitoring conflicts, resolving them, waiting for checks, and squash-merging when green.
+
+```sh
+npx skills@latest add patriksimms/skills/land
+```
+
+* pull - Pull latest origin/main into the current local branch and resolve merge conflicts.
+
+```sh
+npx skills@latest add patriksimms/skills/pull
+```
+
+* push - Push current branch changes to origin and create or update the corresponding pull request.
+
+```sh
+npx skills@latest add patriksimms/skills/push
+```
+
 ## Ralph
 
 in ralph.sh a shell lives that can work with linear issues tagged with `agent-task` in a specific git project directory. 
