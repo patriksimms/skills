@@ -20,6 +20,8 @@ description:
 - Codex session history for intent and rationale.
 - `git status`, `git diff`, and `git diff --staged` for actual changes.
 - Repo-specific commit conventions if documented.
+- GitLab issue or MR references that should be included in the subject/body
+  (for example `Closes #123` or `Related to !456`) when the repo expects them.
 
 ## Steps
 
@@ -40,6 +42,8 @@ description:
    - Summary of key changes (what changed).
    - Rationale and trade-offs (why it changed).
    - Tests or validation run (or explicit note if not run).
+   - GitLab issue/MR references if they are part of the task context or local
+     convention.
 9. Append a `Co-authored-by` trailer for Codex using `Codex <codex@openai.com>`
    unless the user explicitly requests a different identity.
 10. Wrap body lines at 72 characters.

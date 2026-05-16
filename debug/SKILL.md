@@ -2,8 +2,8 @@
 name: debug
 description:
   Investigate stuck runs and execution failures by tracing Symphony and Codex
-  logs with issue/session identifiers; use when runs stall, retry repeatedly, or
-  fail unexpectedly.
+  logs with GitLab issue, merge request, and session identifiers; use when runs
+  stall, retry repeatedly, or fail unexpectedly.
 ---
 
 # Debug
@@ -11,7 +11,7 @@ description:
 ## Goals
 
 - Find why a run is stuck, retrying, or failing.
-- Correlate Linear issue identity to a Codex session quickly.
+- Correlate GitLab issue/MR identity to a Codex session quickly.
 - Read the right logs in the right order to isolate root cause.
 
 ## Log Sources
@@ -24,17 +24,22 @@ description:
 
 ## Correlation Keys
 
-- `issue_identifier`: human ticket key (example: `MT-625`)
-- `issue_id`: Linear UUID (stable internal ID)
+- `issue_identifier`: human ticket key when mirrored from a tracker (example:
+  `MT-625`)
+- `issue_id`: GitLab issue IID or mirrored tracker UUID, depending on the
+  integration
+- `merge_request_iid`: GitLab merge request IID
+- `project_id` / `project_path`: GitLab project identity
 - `session_id`: Codex thread-turn pair (`<thread_id>-<turn_id>`)
 
-`elixir/docs/logging.md` requires these fields for issue/session lifecycle logs. Use
-them as your join keys during debugging.
+`elixir/docs/logging.md` requires issue/MR/session fields for lifecycle logs.
+Use whichever identifiers are present as join keys during debugging.
 
 ## Quick Triage (Stuck Run)
 
 1. Confirm scheduler/worker symptoms for the ticket.
-2. Find recent lines for the ticket (`issue_identifier` first).
+2. Find recent lines for the ticket or MR (`merge_request_iid` first for MR
+   runs, `issue_identifier` or `issue_id` for issue runs).
 3. Extract `session_id` from matching lines.
 4. Trace that `session_id` across start, stream, completion/failure, and stall
    handling logs.
@@ -44,27 +49,32 @@ them as your join keys during debugging.
 ## Commands
 
 ```bash
-# 1) Narrow by ticket key (fastest entry point)
+# 1) Narrow by GitLab MR IID when debugging an MR run
+rg -n "merge_request_iid=123" log/symphony.log*
+
+# 2) Narrow by ticket key when debugging an issue run
 rg -n "issue_identifier=MT-625" log/symphony.log*
 
-# 2) If needed, narrow by Linear UUID
-rg -n "issue_id=<linear-uuid>" log/symphony.log*
+# 3) If needed, narrow by GitLab issue IID, project, or mirrored issue UUID
+rg -n "issue_id=<issue-id>|project_path=<group/project>" log/symphony.log*
 
-# 3) Pull session IDs seen for that ticket
+# 4) Pull session IDs seen for that ticket/MR
 rg -o "session_id=[^ ;]+" log/symphony.log* | sort -u
 
-# 4) Trace one session end-to-end
+# 5) Trace one session end-to-end
 rg -n "session_id=<thread>-<turn>" log/symphony.log*
 
-# 5) Focus on stuck/retry signals
+# 6) Focus on stuck/retry signals
 rg -n "Issue stalled|scheduling retry|turn_timeout|turn_failed|Codex session failed|Codex session ended with error" log/symphony.log*
 ```
 
 ## Investigation Flow
 
 1. Locate the ticket slice:
-    - Search by `issue_identifier=<KEY>`.
-    - If noise is high, add `issue_id=<UUID>`.
+    - For MR runs, search by `merge_request_iid=<IID>` plus `project_path` or
+      `project_id` if present.
+    - For issue runs, search by `issue_identifier=<KEY>` or `issue_id=<ID>`.
+    - If noise is high, add `project_path=<group/project>` or `project_id=<ID>`.
 2. Establish timeline:
     - Identify first `Codex session started ... session_id=...`.
     - Follow with `Codex session completed`, `ended with error`, or worker exit
@@ -79,8 +89,8 @@ rg -n "Issue stalled|scheduling retry|turn_timeout|turn_failed|Codex session fai
     - Check whether failures are isolated to one issue/session or repeating across
       multiple tickets.
 5. Capture evidence:
-    - Save key log lines with timestamps, `issue_identifier`, `issue_id`, and
-      `session_id`.
+    - Save key log lines with timestamps, GitLab issue/MR identifiers,
+      `project_path`/`project_id`, and `session_id`.
     - Record probable root cause and the exact failing stage.
 
 ## Reading Codex Session Logs
@@ -104,11 +114,11 @@ For one specific session investigation, keep the trace narrow:
     - Startup failure before stream events (`Codex session failed ...`).
     - Turn/runtime failure after stream events (`turn_*` / `ended with error`).
     - Stall recovery (`Issue stalled ... restarting with backoff`).
-4. Pair findings with `issue_identifier` and `issue_id` from nearby lines to
-   confirm you are not mixing concurrent retries.
+4. Pair findings with GitLab issue/MR and project identifiers from nearby lines
+   to confirm you are not mixing concurrent retries.
 
-Always pair session findings with `issue_identifier`/`issue_id` to avoid mixing
-concurrent runs.
+Always pair session findings with GitLab issue/MR and project identifiers to
+avoid mixing concurrent runs.
 
 ## Notes
 

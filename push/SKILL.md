@@ -56,8 +56,7 @@ description:
    - Replace all placeholder comments (`<!-- ... -->`).
    - Keep bullets/checkboxes where template expects them.
    - If MR already exists, refresh description content so it reflects the total
-     MR
-     scope (all intended work on the branch), not just the newest commits,
+     MR scope (all intended work on the branch), not just the newest commits,
      including newly added work, removed work, or changed approach.
    - Do not reuse stale description text from earlier iterations.
 7. If the repo has an MR-description validator, run it and fix all reported

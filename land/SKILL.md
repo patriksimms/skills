@@ -58,7 +58,7 @@ description:
 ## Commands
 
 ```
-# Ensure branch and PR context
+# Ensure branch and MR context
 branch=$(git branch --show-current)
 mr_json=$(glab mr view "$branch" --output json)
 mr_iid=$(printf '%s' "$mr_json" | jq -r '.iid')
@@ -126,7 +126,7 @@ Exit codes:
 - Use judgment to identify flaky failures. If a failure is a flake (e.g., a
   timeout on only one platform), you may proceed without fixing it.
 - If CI pushes an auto-fix commit (authored by GitLab CI), it may not
-  trigger a fresh CI run. Detect the updated PR head, pull locally, merge
+  trigger a fresh CI run. Detect the updated MR head, pull locally, merge
   `origin/main` if needed, add a real author commit, and force-push to retrigger
   CI, then restart the checks loop.
 - If all jobs fail with corrupted pnpm lockfile errors on the merge commit, the
@@ -207,7 +207,7 @@ Exit codes:
     previous request.
   - Wait for the next Codex review comment before merging.
 
-## Scope + PR Metadata
+## Scope + MR Metadata
 
 - The MR title and description should reflect the full scope of the change, not
   just the most recent fix.
