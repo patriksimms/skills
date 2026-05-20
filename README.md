@@ -134,6 +134,7 @@ git clone git@github.com:patriksimms/skills.git
 cd skills
 install -m 755 ralph-linear.sh ~/.local/bin/ralph-linear
 install -m 755 ralph-linear-codex.sh ~/.local/bin/ralph-linear-codex
+install -m 755 ralph-gitlab-codex.sh ~/.local/bin/ralph-gitlab-codex
 install -m 755 ralph-todoist-codex.sh ~/.local/bin/ralph-todoist-codex
 ```
 
@@ -198,3 +199,24 @@ ralph-todoist-codex 2 # max iterations
 ```
 
 Todoist task dependencies are read from a `## Blocked by` section containing `#<todoist-task-id>` references. Tasks with unresolved blockers are skipped.
+
+### GitLab Codex CLI version
+
+`ralph-gitlab-codex` uses `glab issue list` to fetch open GitLab issues and `glab issue close` when Codex emits the completion marker.
+
+Required/default GitLab settings:
+
+```sh
+export GITLAB_AGENT_LABEL="${GITLAB_AGENT_LABEL:-agent-task}"
+
+# optional filters
+export GITLAB_REPO="${GITLAB_REPO:-}" # group/project; defaults to current repo
+export GITLAB_PROJECT_LABEL="${GITLAB_PROJECT_LABEL:-}"
+export GITLAB_ISSUE_LIMIT="${GITLAB_ISSUE_LIMIT:-100}"
+export GITLAB_RETRY_ATTEMPTS="${GITLAB_RETRY_ATTEMPTS:-3}"
+export GITLAB_RETRY_DELAY_SECONDS="${GITLAB_RETRY_DELAY_SECONDS:-1}"
+
+ralph-gitlab-codex 2 # max iterations
+```
+
+GitLab issue dependencies are read from a `## Blocked by` section containing `#<issue-iid>` references. Issues with unresolved blockers are skipped.
