@@ -40,6 +40,12 @@ npx skills@latest add patriksimms/skills/prd-to-issues-todoist
 npx skills@latest add patriksimms/skills/prd-to-issues-linear
 ```
 
+* prd-to-issues-gitlab — Break a PRD into independently-grabbable GitLab work items using vertical slices.
+
+```sh
+npx skills@latest add patriksimms/skills/prd-to-issues-gitlab
+```
+
 * grill-me - Get relentlessly interviewed about a plan or design until every branch of the decision tree is resolved.
 
 ```sh
