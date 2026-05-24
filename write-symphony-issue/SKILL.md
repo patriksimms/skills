@@ -82,6 +82,8 @@ Omit `--repo` only when the current directory's Git remote is the intended GitLa
 
 If a workflow Status must be set and `glab issue create` cannot set it, report the created issue URL and the desired Status (`Todo` or `Backlog`) instead of pretending it was set. Only use `glab api` for status updates when the exact project field API is known from local context.
 
+Add the `symphony` label to the created issue.
+
 ## Quality Bar
 
 A Symphony-ready issue should let an unattended coding agent:
