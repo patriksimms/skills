@@ -46,6 +46,12 @@ npx skills@latest add patriksimms/skills/prd-to-issues-linear
 npx skills@latest add patriksimms/skills/prd-to-issues-gitlab
 ```
 
+* write-symphony-issue — Draft Symphony-ready GitLab issues with acceptance criteria and validation steps, then create them with `glab` after human confirmation.
+
+```sh
+npx skills@latest add patriksimms/skills/write-symphony-issue
+```
+
 * grill-me - Get relentlessly interviewed about a plan or design until every branch of the decision tree is resolved.
 
 ```sh
