@@ -65,7 +65,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Create the GitLab work items
 
-For each approved slice, create a GitLab work item in the current project using `glab`. Use the `agent-task` label. Use the issue body template below.
+For each approved slice, create a GitLab work item in the current project using `glab` as child-issues of the PRD work item. Use the `agent-task` label. Use the issue body template below.
 
 Before creating work items, verify `glab` is authenticated and pointed at the intended GitLab project:
 
