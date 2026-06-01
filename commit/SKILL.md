@@ -88,7 +88,7 @@ Prefer this form when committing:
 git commit -F "$message_file" \
   --trailer "AI-Assisted=true" \
   --trailer "AI-Agent=codex" \
-  --trailer "AI-Model=openai/gpt-5"
+  --trailer "AI-Model=openai/gpt-5.5"
 ```
 
 Omit `AI-Agent` or `AI-Model` from the command if the harness does not
@@ -127,5 +127,5 @@ Tests:
 
 AI-Assisted: true
 AI-Agent: codex
-AI-Model: openai/gpt-5
+AI-Model: openai/gpt-5.5
 ```
