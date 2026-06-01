@@ -44,14 +44,64 @@ description:
    - Tests or validation run (or explicit note if not run).
    - GitLab issue/MR references if they are part of the task context or local
      convention.
-9. Append a `Co-authored-by` trailer for Codex using `Codex <codex@openai.com>`
-   unless the user explicitly requests a different identity.
+9. Add AI trailers with `git commit --trailer` when available. If `--trailer`
+   is unavailable, place the same trailer lines manually at the very end of the
+   commit message.
 10. Wrap body lines at 72 characters.
 11. Create the commit message with a here-doc or temp file and use
-    `git commit -F <file>` so newlines are literal (avoid `-m` with `\n`).
+    `git commit -F <file>` so newlines are literal (avoid `-m` with `\n`). When
+    using a message file, pass any AI trailers with `git commit -F <file>
+    --trailer ...`.
 12. Commit only when the message matches the staged changes: if the staged diff
     includes unrelated files or the message describes work that isn't staged,
     fix the index or revise the message before committing.
+
+## Trailer Format
+
+Always include:
+
+```
+AI-Assisted: true
+```
+
+Include `AI-Agent` only when the coding harness explicitly provides the agent
+identity. Do not guess.
+
+```
+AI-Agent: codex
+```
+
+Include `AI-Model` only when the coding harness explicitly provides the model
+identity. Do not guess. Prefer canonical provider/model IDs over marketing
+names.
+
+```
+AI-Model: openai/gpt-5
+```
+
+If the agent or model identity is not available from the harness, omit that
+trailer rather than inventing a value.
+
+Prefer this form when committing:
+
+```sh
+git commit -F "$message_file" \
+  --trailer "AI-Assisted=true" \
+  --trailer "AI-Agent=codex" \
+  --trailer "AI-Model=openai/gpt-5"
+```
+
+Omit `AI-Agent` or `AI-Model` from the command if the harness does not
+explicitly provide those values.
+
+Rules:
+
+- Keep the trailers at the very end of the commit message.
+- Prefer `git commit --trailer` over writing trailer lines manually.
+- Use exactly `AI-Assisted`, `AI-Agent`, and `AI-Model` as trailer keys.
+- Do not add `Co-authored-by` unless the user explicitly asks for it.
+- If tests or checks were run, mention the result in the commit body and after
+  committing, not in the trailers.
 
 ## Output
 
@@ -75,5 +125,7 @@ Rationale:
 Tests:
 - <command or "not run (reason)">
 
-AI-Assisted-By: Codex
+AI-Assisted: true
+AI-Agent: codex
+AI-Model: openai/gpt-5
 ```
