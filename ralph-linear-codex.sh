@@ -339,7 +339,8 @@ for ((i=1; i<=$1; i++)); do
   issue_url=$(get_issue_field "$next_issue" "url")
 
   prompt=$(cat <<EOF
-Use the tdd-ralph skill.
+Use the tdd-ralph skill for implementation.
+Use the commit skill when creating the final git commit.
 
 Selected Linear issue:
 - ID: ${issue_id}
@@ -353,7 +354,7 @@ ${issue_description}
 3. Update the PRD with the work that was done if the PRD is affected by the task.
 4. Append your progress to the progress.txt file.
 Use this to leave a note for the next person working in the codebase.
-5. Make a git commit for the task if you completed meaningful work.
+5. If you completed meaningful work, use the commit skill to create a git commit for the task.
 6. Do not mark the Linear issue complete yourself; this loop will update Linear if you emit the completion marker.
 ONLY WORK ON A SINGLE LINEAR ISSUE.
 If the selected Linear issue is complete at the end of your run, output ${COMPLETE_MARKER}. Otherwise do not output that marker.

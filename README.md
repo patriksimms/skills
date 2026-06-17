@@ -163,6 +163,13 @@ ralph-linear 2 # max iterations
 
 `ralph-linear-codex` uses `codex exec` instead of Claude. The worker run streams Codex output directly to the terminal and writes the final assistant message to a temp file so the loop can detect `<promise>COMPLETE</promise>`.
 
+Install the skills used by the worker in the Codex environment or profile that will run the loop:
+
+```sh
+npx skills@latest add patriksimms/skills/tdd-ralph
+npx skills@latest add patriksimms/skills/commit
+```
+
 Optional Codex settings:
 
 ```sh
@@ -189,6 +196,13 @@ This maps to Codex CLI's `model_reasoning_effort` config key.
 
 `ralph-todoist-codex` uses `td task list` to fetch open Todoist tasks and `td task complete` when Codex emits the completion marker.
 
+Install the skills used by the worker in the Codex environment or profile that will run the loop:
+
+```sh
+npx skills@latest add patriksimms/skills/tdd-ralph
+npx skills@latest add patriksimms/skills/commit
+```
+
 Required/default Todoist settings:
 
 ```sh
@@ -209,6 +223,13 @@ Todoist task dependencies are read from a `## Blocked by` section containing `#<
 ### GitLab Codex CLI version
 
 `ralph-gitlab-codex` uses `glab issue list` to fetch open GitLab issues and `glab issue close` when Codex emits the completion marker.
+
+Install the skills used by the worker in the Codex environment or profile that will run the loop:
+
+```sh
+npx skills@latest add patriksimms/skills/tdd-ralph
+npx skills@latest add patriksimms/skills/commit
+```
 
 Required/default GitLab settings:
 

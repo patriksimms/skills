@@ -333,7 +333,8 @@ for ((i=1; i<=$1; i++)); do
   task_url=$(get_task_field "$next_task" "url")
 
   prompt=$(cat <<EOF
-Use the tdd-ralph skill.
+Use the tdd-ralph skill for implementation.
+Use the commit skill when creating the final git commit.
 
 Selected Todoist task:
 - ID: ${task_id}
@@ -347,7 +348,7 @@ ${task_description}
 3. Update the PRD with the work that was done if the PRD is affected by the task.
 4. Append your progress to the progress.txt file.
 Use this to leave a note for the next person working in the codebase.
-5. Make a git commit for the task if you completed meaningful work.
+5. If you completed meaningful work, use the commit skill to create a git commit for the task.
 6. Do not mark the Todoist task complete yourself; this loop will complete the Todoist task if you emit the completion marker.
 ONLY WORK ON A SINGLE TODOIST TASK.
 If the selected Todoist task is complete at the end of your run, output ${COMPLETE_MARKER}. Otherwise do not output that marker.
