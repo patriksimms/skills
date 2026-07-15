@@ -1,5 +1,6 @@
 ---
 name: land
+disable-model-invocation: true
 description:
   Land a GitLab MR by monitoring conflicts, resolving them, waiting for
   pipelines, and squash-merging when green; use when asked to land, merge, or
