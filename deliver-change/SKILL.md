@@ -1,93 +1,140 @@
 ---
 name: deliver-change
-description: Deliver an end-to-end GitHub or GitLab change from clarified outcome through tracking item, pull or merge request, implementation, tests, green checks, and fresh-context review/fix loops. Use when the user asks Codex to implement and shepherd a change until it is ready for human review.
+description: Deliver an end-to-end GitHub or GitLab change from a clarified outcome through a tracking item, draft pull or merge request, implementation, tests, required green checks, and a bounded independent review. Use when the user asks Codex to implement and shepherd a change until it is ready for human review.
 ---
 
 # Deliver Change
 
-Own a change until its pull or merge request is green and independently reviewed. Stop at human review; leave the change request unmerged.
+Own a change until its pull or merge request is green and ready for human review. Leave it unmerged. Prefer correctness and a compact, reviewable change over opportunistic cleanup.
 
 ## 1. Establish the contract
 
-Require the user to state the desired change or outcome. Inspect the repository for context before asking follow-ups. Ask concise questions in one batch whenever possible, limited to decisions whose answers materially change behavior, scope, or acceptance. Include a recommended answer when it helps.
+Inspect the repository before asking questions. Ask one concise batch containing only decisions that materially change behavior, scope, or acceptance.
 
-Restate the shared contract as:
+Restate and ask the user to confirm:
 
 - outcome and observable behavior
 - in-scope and out-of-scope behavior
 - acceptance criteria
-- relevant product or technical decisions
+- product or technical decisions
 - expected test coverage
+- important state transitions and edge cases
 
-Ask the user to confirm or correct it. Batch any remaining blockers once more. This step is complete only when the contract contains no unresolved decision that would materially change the implementation.
+For stateful behavior, turn the acceptance criteria into a small scenario matrix such as `initial state -> action -> intermediate state -> observable result`. Include filtering, retries, narrowing/widening, deselection, failure, or persistence when relevant. Resolve material ambiguity before opening work.
 
-## 2. Open the work
+## 2. Learn the project gates
 
-Read the repository instructions, detect the forge from the configured remote, identify the default branch, and preserve unrelated working-tree changes. Follow a user or repository instruction that selects a forge or CLI wrapper.
+Read repository instructions and inspect the configured package manager, lockfiles, CI, formatter, linter, type-checker, and test commands. Distinguish:
 
-Use one vocabulary for the rest of the run:
+- required checks that must pass
+- allowed failures or advisory checks
+- pre-existing repository-wide failures
+- changed-file checks appropriate for a repository with baseline debt
+
+Do not invent a gate the project does not configure. Preserve unrelated working-tree changes. Detect the forge and default branch, and follow any repository-selected CLI or wrapper.
+
+## 3. Open the work
+
+Use one vocabulary for the run:
 
 | Forge | Verify access | Tracking item | Change request |
 | --- | --- | --- | --- |
 | GitHub | `gh auth status` and `gh repo view` | issue | pull request |
 | GitLab | `glab auth status` and `glab repo view` | work item | merge request |
 
-Create a concise tracking item containing the confirmed contract under `Outcome`, `Scope`, and `Acceptance criteria`. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create` when the installed CLI lacks work-item support. Pass Markdown with actual newline characters. Capture its number or IID and URL.
+Create a concise tracking item containing `Outcome`, `Scope`, `Acceptance criteria`, and the scenario matrix where useful. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
 
-Create a short branch from the current default branch and check it out in the existing working directory. Use no additional worktree. Create a linked draft change request:
+Create a short branch from the current default branch in the existing working directory, then create a linked draft change request:
 
-- On GitHub, use `gh pr create --draft` and include `Closes #<issue-number>` in its body.
-- On GitLab, use `glab mr create --draft --related-issue <work-item-iid>`.
+- GitHub: `gh pr create --draft` with `Closes #<issue-number>`.
+- GitLab: `glab mr create --draft --related-issue <work-item-iid>`.
 
-Include the outcome and planned validation in the change request description. Capture its number or IID and URL.
+Include the outcome and planned validation in the description.
 
-This step is complete when the linked tracking item and draft change request exist and its source branch is checked out locally.
+## 4. Implement and preflight
 
-## 3. Implement the contract
+Trace the complete affected path before editing, including state ownership, memoization, persistence, API or modal payload construction, and existing tests. Implement the smallest coherent end-to-end change satisfying the contract.
 
-Trace the affected behavior and existing conventions before editing. Implement the smallest coherent end-to-end slice that satisfies every acceptance criterion.
+Add behavior-focused tests at the lowest level that proves the behavior. Use existing end-to-end infrastructure when the changed journey is already covered there.
 
-Add reasonable behavior-focused tests at the lowest useful level. When the repository already has end-to-end test infrastructure and the change affects a covered user journey, add or update an end-to-end test. Run the relevant focused tests first, then the repository's normal formatting, linting, type-checking, and test commands.
+Before publishing:
 
-This step is complete when every acceptance criterion is represented by implementation or test evidence and all relevant local checks pass.
+1. Map every acceptance criterion and scenario to implementation or test evidence.
+2. Exercise the full transition sequence, not only isolated predicates.
+3. Inspect the diff for accidental formatting, dependency, generated-file, and lockfile churn.
+4. Run focused tests first, then the project's required local gates.
+5. Record advisory or pre-existing failures accurately without treating them as change-caused blockers.
 
-## 4. Publish and reach green
+Do not introduce a new framework or broad refactor only to satisfy a preference when a smaller project-consistent solution is adequate.
 
-Invoke the `commit` skill to commit the intended changes, including the tracking item reference. Push the checked-out branch and update the change request description if implementation or validation differs from the original plan.
+## 5. Publish and reach green
 
-Watch the latest change-request checks to completion with the selected forge CLI:
+Invoke the `commit` skill to commit only the intended changes with the tracking-item reference. Push the branch and update the change-request description when implementation or validation differs from the plan.
 
-- On GitHub, use `gh pr checks --watch`; inspect failures with `gh run view <run-id> --log-failed`.
-- On GitLab, use `glab ci status --branch <branch> --live`; inspect failures with `glab ci trace <job-id>`.
+Watch checks for the exact pushed commit:
 
-For each failure:
+- GitHub: `gh pr checks --watch`; inspect failures with `gh run view <run-id> --log-failed`.
+- GitLab: `glab ci status --branch <branch> --live`; inspect failures with `glab ci trace <job-id>`.
 
-- If the failure is caused by this change, fix it, rerun the relevant local checks, invoke the `commit` skill, push, and watch the new pipeline.
-- If the evidence points to project configuration, runner infrastructure, credentials, dependency service availability, or a network failure outside this change, stop and report the failing job, evidence, and change-request URL to the user.
+Fix a failure only when evidence connects it to the change. Rerun relevant local checks, invoke the `commit` skill, push, and watch the replacement pipeline. For infrastructure, credentials, service, network, or documented baseline failures outside the change, report the evidence; stop only when a required gate cannot complete.
 
-This gate is complete only when every required check for the latest change-request commit succeeds.
+This gate passes when all required checks for the latest commit succeed.
 
-## 5. Run the fresh-context review loop
+## 6. Run a bounded independent review
 
-After each green check run, start a fresh review thread with no implementation conversation. Give it only the repository path, forge, change-request number/URL, target branch as the fixed point, and tracking-item number/URL. Direct it to:
+Use the `review-code` skill. Reviews return candidates; the delivery owner decides what is blocking before anything is posted or changed.
 
-1. Fetch the current tracking-item description with the selected forge CLI and use it as the exact spec.
-2. Invoke the `code-review` skill against `<target-branch>...HEAD`.
-3. Post every actionable finding to the change request with the selected forge CLI or API, inline on the diff when a stable position is available and otherwise as a top-level comment. Prefix agent-authored comments with `[codex]`.
-4. Return the posted comment or discussion IDs and explicitly report whether the review found zero actionable issues.
+### First review
 
-Wait for that thread to finish. When it posts findings, start a separate fresh fix thread with the repository path, forge, change-request number/URL, tracking-item number/URL, and finding IDs. Direct it to inspect each finding and choose one resolution:
+After the first green run, start one isolated review thread. When subagents are available, use no inherited conversation turns (`fork_turns="none"`). Provide only:
 
-- Accept: reply with the intended correction, implement and test it, invoke the `commit` skill, push, then reply with the commit SHA and resolve the thread where the forge supports resolution.
-- Rebut: reply with concrete spec or code evidence and resolve the thread where the forge supports resolution without changing code.
-- Clarify: leave the discussion open and return the exact decision needed from the user.
+- repository path and forge
+- change-request number and URL
+- target branch and reviewed HEAD SHA
+- tracking-item number and URL
+- project gate summary
 
-The fix thread must avoid changing code concurrently with any other thread. If clarification is required, stop and ask the user. Otherwise, wait for the new checks and apply the green-check gate again. Then start another fresh review thread. A later review should not repost an identical resolved finding unless the problem still exists.
+Ask for a full `review-code` review of `<target-branch>...<reviewed-HEAD>` and candidate findings without modifying code or posting comments.
 
-Repeat until a fresh review reports zero actionable findings, every agent-generated finding has a recorded resolution, every resolvable review thread is resolved, and the latest commit's required checks are green.
+For each candidate, independently confirm its evidence and classify it:
 
-## 6. Hand off
+- **Blocking:** a reproducible correctness, security, privacy, data-loss, compatibility, or explicit acceptance-criterion failure; or a required project gate caused by the change.
+- **Non-blocking:** maintainability improvements, preference-level guidance, possible code smells, naming/style opinions, speculative abstractions, and tooling or baseline issues that do not fail a required gate.
 
-Mark the draft change request ready with `gh pr ready` or `glab mr ready`. Report the tracking-item and change-request URLs, the delivered outcome, validation performed, and that the checks and final review are clean. Leave the pull or merge request for the human to review and merge.
+Do not upgrade a finding merely because it is labelled actionable. Post only confirmed blocking findings as `[codex]` discussions, inline when a stable position exists. Summarize non-blocking suggestions in the handoff; do not create resolvable threads for them.
 
-The skill is complete only at this handoff state.
+### Fix blocking findings once as a batch
+
+If blockers exist, start one isolated fix thread with no inherited conversation turns. Give it only the repository, forge, change request, tracking item, reviewed SHA, and blocking discussion IDs. For each finding, choose:
+
+- **Accept:** reply with intent, fix and test, invoke `commit`, push, reply with the SHA, and resolve.
+- **Rebut:** reply with concrete spec or code evidence and resolve without changing code.
+- **Clarify:** leave open and ask the user for the exact decision.
+
+Avoid concurrent code edits. After the batch, rerun required checks.
+
+### Delta verification
+
+Run at most one independent delta review from the previously reviewed SHA to the new HEAD. It must:
+
+- verify accepted blockers and their regression tests
+- inspect only changed lines plus directly affected behavior
+- avoid new smell hunting in unchanged code
+- return candidates without posting
+
+If it finds a new blocker caused by the fix, correct it and run targeted local verification of that scenario. Do not restart a broad standards/spec review. Report any unresolved non-blocking concern to the human reviewer.
+
+The normal review budget is one full review and one delta verification. Exceed it only for an unresolved high-risk correctness, security, privacy, or data-loss issue, and tell the user why.
+
+## 7. Hand off
+
+Mark the draft ready with the forge-supported command or API. Report:
+
+- tracking-item and change-request URLs
+- delivered behavior
+- required validation and latest green commit
+- blocking findings and resolutions
+- non-blocking suggestions, if any
+- whether the full review and delta verification were clean
+
+Leave the change request unmerged for human review.

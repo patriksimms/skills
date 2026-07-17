@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Code"
+  short_description: "Risk-ranked standards and spec review"
+  default_prompt: "Use $review-code to review this branch against its fixed point and originating specification."
