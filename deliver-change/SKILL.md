@@ -18,6 +18,7 @@ Restate the shared contract as:
 - acceptance criteria
 - relevant product or technical decisions
 - expected test coverage
+- user-provided evidence, including every image pasted or attached in the chat
 
 Ask the user to confirm or correct it. Batch any remaining blockers once more. This step is complete only when the contract contains no unresolved decision that would materially change the implementation.
 
@@ -32,7 +33,14 @@ Use one vocabulary for the rest of the run:
 | GitHub | `gh auth status` and `gh repo view` | issue | pull request |
 | GitLab | `glab auth status` and `glab repo view` | work item | merge request |
 
-Create a concise tracking item containing the confirmed contract under `Outcome`, `Scope`, and `Acceptance criteria`. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create` when the installed CLI lacks work-item support. Pass Markdown with actual newline characters. Capture its number or IID and URL.
+Create a concise tracking-item body containing the confirmed contract under `Outcome`, `Scope`, and `Acceptance criteria`. When the user pasted or attached images, add an `Evidence` section and include every image unless the user explicitly excludes it. Obtain the image bytes or local attachment path from the chat harness; when neither is accessible, ask the user to reattach the image or provide a path rather than omitting it.
+
+Attach images through the selected forge:
+
+- On GitLab, upload each image with `glab api --method POST projects/:fullpath/uploads --form "file=@<path>"`. Extract the non-empty `.markdown` value from each response and place every value in `Evidence` before creating the work item.
+- On GitHub, place any image with a stable accessible URL in `Evidence`. For a local-only chat image, create the issue with `gh`, then use the authenticated GitHub web issue editor to upload the image into its description and save it. If browser interaction is unavailable, ask the user for an accessible image URL; `gh issue create` has no supported binary-attachment option.
+
+Pass Markdown with actual newline characters. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create` when the installed CLI lacks work-item support. Capture the tracking item's number or IID and URL. Fetch its saved description and verify that it contains a Markdown reference for every included image.
 
 Create a short branch from the current default branch and check it out in the existing working directory. Use no additional worktree. Create a linked draft change request:
 
@@ -41,7 +49,7 @@ Create a short branch from the current default branch and check it out in the ex
 
 Include the outcome and planned validation in the change request description. Capture its number or IID and URL.
 
-This step is complete when the linked tracking item and draft change request exist and its source branch is checked out locally.
+This step is complete when every included chat image is attached to the tracking item, the linked draft change request exists, and its source branch is checked out locally.
 
 ## 3. Implement the contract
 
