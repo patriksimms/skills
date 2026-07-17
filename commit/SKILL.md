@@ -20,8 +20,9 @@ description:
 - Codex session history for intent and rationale.
 - `git status`, `git diff`, and `git diff --staged` for actual changes.
 - Repo-specific commit conventions if documented.
-- GitLab issue or MR references that should be included in the subject/body
-  (for example `Closes #123` or `Related to !456`) when the repo expects them.
+- GitHub or GitLab tracking-item and change-request references that should be
+  included in the subject/body (for example `Closes #123`, `Related to #456`,
+  or `Related to !456`) when the repository expects them.
 
 ## Steps
 
@@ -42,8 +43,8 @@ description:
    - Summary of key changes (what changed).
    - Rationale and trade-offs (why it changed).
    - Tests or validation run (or explicit note if not run).
-   - GitLab issue/MR references if they are part of the task context or local
-     convention.
+   - GitHub or GitLab issue and pull/merge-request references when they are
+     part of the task context or repository convention.
 9. Add AI trailers with `git commit --trailer` when available. If `--trailer`
    is unavailable, place the same trailer lines manually at the very end of the
    commit message.

@@ -1,11 +1,11 @@
 ---
 name: deliver-change
-description: Deliver an end-to-end GitLab change from clarified outcome through work item, merge request, implementation, tests, green pipeline, and fresh-context review/fix loops. Use when the user asks Codex to implement and shepherd a change until it is ready for human review.
+description: Deliver an end-to-end GitHub or GitLab change from clarified outcome through tracking item, pull or merge request, implementation, tests, green checks, and fresh-context review/fix loops. Use when the user asks Codex to implement and shepherd a change until it is ready for human review.
 ---
 
 # Deliver Change
 
-Own a change until its merge request is green and independently reviewed. Stop at human review; leave the merge request unmerged.
+Own a change until its pull or merge request is green and independently reviewed. Stop at human review; leave the change request unmerged.
 
 ## 1. Establish the contract
 
@@ -23,13 +23,25 @@ Ask the user to confirm or correct it. Batch any remaining blockers once more. T
 
 ## 2. Open the work
 
-Read the repository instructions, verify `glab auth status` and `glab repo view`, identify the default branch, and preserve unrelated working-tree changes. Use the repository's required `glab` wrapper when its instructions define one.
+Read the repository instructions, detect the forge from the configured remote, identify the default branch, and preserve unrelated working-tree changes. Follow a user or repository instruction that selects a forge or CLI wrapper.
 
-Create a concise GitLab work item containing the confirmed contract under `Outcome`, `Scope`, and `Acceptance criteria`. Pass Markdown with actual newline characters. Capture its IID and URL.
+Use one vocabulary for the rest of the run:
 
-Create a short branch from the current default branch and check it out in the existing working directory. Use no additional worktree. Create a draft merge request with `glab mr create --related-issue <work-item-iid>` so GitLab links it to the work item. Include the work item reference, the outcome, and the planned validation in the MR description. Capture the MR IID and URL.
+| Forge | Verify access | Tracking item | Change request |
+| --- | --- | --- | --- |
+| GitHub | `gh auth status` and `gh repo view` | issue | pull request |
+| GitLab | `glab auth status` and `glab repo view` | work item | merge request |
 
-This step is complete when the linked work item and draft MR exist and the MR source branch is checked out locally.
+Create a concise tracking item containing the confirmed contract under `Outcome`, `Scope`, and `Acceptance criteria`. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create` when the installed CLI lacks work-item support. Pass Markdown with actual newline characters. Capture its number or IID and URL.
+
+Create a short branch from the current default branch and check it out in the existing working directory. Use no additional worktree. Create a linked draft change request:
+
+- On GitHub, use `gh pr create --draft` and include `Closes #<issue-number>` in its body.
+- On GitLab, use `glab mr create --draft --related-issue <work-item-iid>`.
+
+Include the outcome and planned validation in the change request description. Capture its number or IID and URL.
+
+This step is complete when the linked tracking item and draft change request exist and its source branch is checked out locally.
 
 ## 3. Implement the contract
 
@@ -41,36 +53,41 @@ This step is complete when every acceptance criterion is represented by implemen
 
 ## 4. Publish and reach green
 
-Invoke the `commit` skill to commit the intended changes, including the work item reference. Push the checked-out branch and update the MR description if implementation or validation differs from the original plan.
+Invoke the `commit` skill to commit the intended changes, including the tracking item reference. Push the checked-out branch and update the change request description if implementation or validation differs from the original plan.
 
-Watch the branch pipeline to completion with `glab`. For each failure, inspect the failing job and its trace:
+Watch the latest change-request checks to completion with the selected forge CLI:
+
+- On GitHub, use `gh pr checks --watch`; inspect failures with `gh run view <run-id> --log-failed`.
+- On GitLab, use `glab ci status --branch <branch> --live`; inspect failures with `glab ci trace <job-id>`.
+
+For each failure:
 
 - If the failure is caused by this change, fix it, rerun the relevant local checks, invoke the `commit` skill, push, and watch the new pipeline.
-- If the evidence points to project configuration, runner infrastructure, credentials, dependency service availability, or a network failure outside this change, stop and report the failing job, evidence, and MR URL to the user.
+- If the evidence points to project configuration, runner infrastructure, credentials, dependency service availability, or a network failure outside this change, stop and report the failing job, evidence, and change-request URL to the user.
 
-This gate is complete only when the latest MR commit has a successful pipeline.
+This gate is complete only when every required check for the latest change-request commit succeeds.
 
 ## 5. Run the fresh-context review loop
 
-After each green pipeline, start a fresh review thread with no implementation conversation. Give it only the repository path, MR IID/URL, target branch as the fixed point, and work item IID/URL. Direct it to:
+After each green check run, start a fresh review thread with no implementation conversation. Give it only the repository path, forge, change-request number/URL, target branch as the fixed point, and tracking-item number/URL. Direct it to:
 
-1. Fetch the current work item description and use it as the exact spec.
+1. Fetch the current tracking-item description with the selected forge CLI and use it as the exact spec.
 2. Invoke the `code-review` skill against `<target-branch>...HEAD`.
-3. Post every actionable finding to the MR, inline on the diff when a stable position is available and otherwise as a top-level MR note. Prefix agent-authored comments with `[codex]`.
-4. Return the posted discussion or note IDs and explicitly report whether the review found zero actionable issues.
+3. Post every actionable finding to the change request with the selected forge CLI or API, inline on the diff when a stable position is available and otherwise as a top-level comment. Prefix agent-authored comments with `[codex]`.
+4. Return the posted comment or discussion IDs and explicitly report whether the review found zero actionable issues.
 
-Wait for that thread to finish. When it posts findings, start a separate fresh fix thread with the repository path, MR IID/URL, work item IID/URL, and finding IDs. Direct it to inspect each finding and choose one resolution:
+Wait for that thread to finish. When it posts findings, start a separate fresh fix thread with the repository path, forge, change-request number/URL, tracking-item number/URL, and finding IDs. Direct it to inspect each finding and choose one resolution:
 
-- Accept: reply with the intended correction, implement and test it, invoke the `commit` skill, push, then reply with the commit SHA and resolve the discussion.
-- Rebut: reply with concrete spec or code evidence and resolve the discussion without changing code.
+- Accept: reply with the intended correction, implement and test it, invoke the `commit` skill, push, then reply with the commit SHA and resolve the thread where the forge supports resolution.
+- Rebut: reply with concrete spec or code evidence and resolve the thread where the forge supports resolution without changing code.
 - Clarify: leave the discussion open and return the exact decision needed from the user.
 
-The fix thread must avoid changing code concurrently with any other thread. If clarification is required, stop and ask the user. Otherwise, wait for the new pipeline and apply the green-pipeline gate again. Then start another fresh review thread. A later review should not repost an identical resolved finding unless the problem still exists.
+The fix thread must avoid changing code concurrently with any other thread. If clarification is required, stop and ask the user. Otherwise, wait for the new checks and apply the green-check gate again. Then start another fresh review thread. A later review should not repost an identical resolved finding unless the problem still exists.
 
-Repeat until a fresh review reports zero actionable findings, every agent-generated review discussion is resolved, and the latest commit's pipeline is green.
+Repeat until a fresh review reports zero actionable findings, every agent-generated finding has a recorded resolution, every resolvable review thread is resolved, and the latest commit's required checks are green.
 
 ## 6. Hand off
 
-Mark the draft MR ready, if applicable. Report the work item and MR URLs, the delivered outcome, validation performed, and that the pipeline and final review are clean. Leave the merge request for the human to review and merge.
+Mark the draft change request ready with `gh pr ready` or `glab mr ready`. Report the tracking-item and change-request URLs, the delivered outcome, validation performed, and that the checks and final review are clean. Leave the pull or merge request for the human to review and merge.
 
 The skill is complete only at this handoff state.

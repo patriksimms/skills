@@ -1,4 +1,4 @@
 interface:
   display_name: "Deliver Change"
   short_description: "Shepherd a change to human review"
-  default_prompt: "Use $deliver-change to implement this change and prepare a green, reviewed GitLab merge request."
+  default_prompt: "Use $deliver-change to implement this change and prepare a green, reviewed pull or merge request."
