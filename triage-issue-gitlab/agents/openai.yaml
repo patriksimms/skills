@@ -1,0 +1,7 @@
+interface:
+  display_name: "GitLab Triage"
+  short_description: "Triage GitLab issues and merge requests"
+  default_prompt: "Use $triage-issue-gitlab to triage GitLab work needing maintainer attention."
+
+policy:
+  allow_implicit_invocation: false
