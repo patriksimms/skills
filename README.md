@@ -98,6 +98,12 @@ npx skills@latest add patriksimms/skills/setup-ts-project
 
 These skills help with day-to-day git and debugging workflows.
 
+* deliver-change - Deliver a GitLab change from a clarified outcome through implementation, tests, a green pipeline, and review loops until the merge request is ready for human review.
+
+```sh
+npx skills@latest add patriksimms/skills/deliver-change
+```
+
 * commit - Create a well-formed git commit from current changes using session history for rationale and summary.
 
 ```sh
