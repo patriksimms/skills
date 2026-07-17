@@ -1,6 +1,5 @@
 ---
 name: write-symphony-issue
-disable-model-invocation: true
 description: Drafts Symphony-ready GitLab issues with acceptance criteria and validation steps. Use when creating, phrasing, or filing Symphony/Codex Work Items through glab after explicit human confirmation.
 ---
 

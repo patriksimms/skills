@@ -1,6 +1,5 @@
 ---
 name: push
-disable-model-invocation: true
 description:
   Push current branch changes to origin and create or update the corresponding
   merge request; use when asked to push, publish updates, or create merge

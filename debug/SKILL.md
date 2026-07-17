@@ -1,6 +1,5 @@
 ---
 name: debug
-disable-model-invocation: true
 description:
   Investigate stuck runs and execution failures by tracing Symphony and Codex
   logs with GitLab issue, merge request, and session identifiers; use when runs
