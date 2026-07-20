@@ -25,11 +25,13 @@ For `delta` mode, also require the previously reviewed SHA. Review `<previously-
 
 Fetch the exact spec from the tracking system when available. Identify repository-authored standards such as `AGENTS.md`, `CONTRIBUTING.md`, or `CODING_STANDARDS.md` and inspect configured CI and package scripts.
 
+When the diff changes user-facing frontend behavior and the tracking item contains labelled before/after screenshots, open every matched pair and compare the affected state. Record the evidence each pair demonstrates and any attachment that is missing or inaccessible. Visual context gathering is complete when every materially changed frontend state represented by the attachments has been inspected or recorded as unavailable.
+
 Record which gates are required, advisory, allowed to fail, or already failing on the fixed point. A tool preference is not a hard rule. A repository baseline failure is not introduced by the diff unless evidence shows otherwise.
 
 ## 3. Review along two independent axes
 
-When subagents are available, run Standards and Spec in parallel with `fork_turns="none"`; otherwise run them sequentially with separate notes. Give each only the repository path, exact refs, relevant standards or spec, and the brief below.
+When subagents are available, run Standards and Spec in parallel with `fork_turns="none"`; otherwise run them sequentially with separate notes. Give each only the repository path, exact refs, relevant standards or spec, and the brief below. For frontend changes, give the Spec axis the inspected visual evidence.
 
 ### Standards axis
 
@@ -47,6 +49,8 @@ Trace each acceptance criterion through implementation, state transitions, tests
 - tests that pass without proving the required behavior
 
 Exercise sequences, not only isolated predicates: state change, filtering, retry, persistence, failure, narrowing/widening, payload creation, and deselection where relevant.
+
+For frontend changes with matched screenshots, compare the after state with the observable requirements and use the before state to verify the claimed change. Treat screenshots as supporting evidence, not a substitute for exercising interactive behavior or unpictured states.
 
 ## 4. Apply the evidence threshold
 
@@ -87,7 +91,7 @@ Include only useful suggestions a human reviewer may reasonably act on. Keep thi
 
 ## Verification
 
-State the reviewed refs, checks inspected or run, baseline/advisory failures, prior blocker status in delta mode, and important acceptance paths verified.
+State the reviewed refs, checks inspected or run, baseline/advisory failures, prior blocker status in delta mode, important acceptance paths verified, and, for frontend changes, the screenshot pairs inspected or unavailable.
 
 End with exactly one of:
 

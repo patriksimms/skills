@@ -101,6 +101,7 @@ After the first green run, start one isolated review thread. When subagents are 
 - target branch and reviewed HEAD SHA
 - tracking-item number and URL
 - project gate summary
+- for frontend changes, labels and attachment URLs for the matched before/after screenshots
 
 Ask for a full `review-code` review of `<target-branch>...<reviewed-HEAD>` and candidate findings without modifying code or posting comments.
 
