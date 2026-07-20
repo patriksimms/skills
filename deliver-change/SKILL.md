@@ -55,6 +55,14 @@ Include the outcome and planned validation in the description.
 
 Trace the complete affected path before editing, including state ownership, memoization, persistence, API or modal payload construction, and existing tests. Implement the smallest coherent end-to-end change satisfying the contract.
 
+When the contract requires frontend changes, create matched visual evidence:
+
+1. Before editing the frontend, capture the affected UI in its current state.
+2. After implementation, capture the same route, viewport, data, and UI state wherever possible.
+3. Attach the before and after screenshots, clearly labelled, to the tracking item. Start with one matched pair; add another only when a distinct route, viewport, or state needed to demonstrate the change cannot be shown by an existing pair.
+
+The visual-evidence step is complete when the tracking item contains the minimal set of matched before/after screenshots needed to show every materially changed frontend state.
+
 Add behavior-focused tests at the lowest level that proves the behavior. Use existing end-to-end infrastructure when the changed journey is already covered there.
 
 Before publishing:
@@ -132,6 +140,7 @@ Mark the draft ready with the forge-supported command or API. Report:
 
 - tracking-item and change-request URLs
 - delivered behavior
+- frontend before/after evidence attached to the tracking item, when applicable
 - required validation and latest green commit
 - blocking findings and resolutions
 - non-blocking suggestions, if any
