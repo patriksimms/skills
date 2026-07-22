@@ -22,6 +22,12 @@ npx skills@latest add patriksimms/skills/deprecated/write-a-prd-linear
 npx skills@latest add patriksimms/skills/deprecated/write-a-prd-gitlab
 ```
 
+* write-symphony-issue — Draft Symphony-ready GitLab issues with acceptance criteria and validation steps, then create them with `glab` after human confirmation.
+
+```sh
+npx skills@latest add patriksimms/skills/deprecated/write-symphony-issue
+```
+
 * prd-to-issues — Break a PRD into independently-grabbable todoist tasks using vertical slices. Creates linear sub
 
 ```sh

@@ -18,12 +18,6 @@ These skills help you think through problems before writing code.
 npx skills@latest add patriksimms/skills/product-discovery
 ```
 
-* write-symphony-issue — Draft Symphony-ready GitLab issues with acceptance criteria and validation steps, then create them with `glab` after human confirmation.
-
-```sh
-npx skills@latest add patriksimms/skills/write-symphony-issue
-```
-
 * setup-ts-project - Add development tooling like testing, formatting, linting, CI, database, docker and renovate for typescript project.
 
 ```sh
