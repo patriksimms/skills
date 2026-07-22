@@ -34,6 +34,12 @@ These skills help with day-to-day git and debugging workflows.
 npx skills@latest add patriksimms/skills/deliver-change
 ```
 
+* review-code - Review a branch, pull request, merge request, or work-in-progress diff, then deduplicate and risk-rank evidence-backed findings into blocking and non-blocking results.
+
+```sh
+npx skills@latest add patriksimms/skills/review-code
+```
+
 * commit - Create a well-formed git commit from current changes using session history for rationale and summary.
 
 ```sh

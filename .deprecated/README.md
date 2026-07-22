@@ -10,7 +10,7 @@
 npx skills@latest add patriksimms/skills/.deprecated/write-a-prd-todoist
 ```
 
-* write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD issue.
+* write-a-prd-linear — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD issue.
 
 ```sh
 npx skills@latest add patriksimms/skills/.deprecated/write-a-prd-linear
@@ -28,7 +28,7 @@ npx skills@latest add patriksimms/skills/.deprecated/write-a-prd-gitlab
 npx skills@latest add patriksimms/skills/.deprecated/write-symphony-issue
 ```
 
-* prd-to-issues — Break a PRD into independently-grabbable todoist tasks using vertical slices. Creates linear sub
+* prd-to-issues-todoist — Break a PRD into independently-grabbable Todoist tasks using vertical slices.
 
 ```sh
 npx skills@latest add patriksimms/skills/.deprecated/prd-to-issues-todoist
