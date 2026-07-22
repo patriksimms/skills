@@ -10,6 +10,12 @@ The skills use CLIs such as `td`, `linear`, and `glab` for using task management
 
 These skills help you think through problems before writing code.
 
+* product-discovery — Shape rough product ideas, uncover important unknowns, research options, and recommend a direction without implementation.
+
+```sh
+npx skills@latest add patriksimms/skills/product-discovery
+```
+
 * write-a-prd-todoist — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a todoist PRD issue.
 
 ```sh

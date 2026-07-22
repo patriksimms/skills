@@ -1,0 +1,6 @@
+interface:
+  display_name: "Product Discovery"
+  short_description: "Shape ideas and research product options"
+  default_prompt: "Use $product-discovery to help me shape this product idea."
+policy:
+  allow_implicit_invocation: false
