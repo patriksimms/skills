@@ -7,79 +7,79 @@
 * write-a-prd-todoist — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a todoist PRD issue.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/write-a-prd-todoist
+npx skills@latest add patriksimms/skills/.deprecated/write-a-prd-todoist
 ```
 
 * write-a-prd — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a linear PRD issue.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/write-a-prd-linear
+npx skills@latest add patriksimms/skills/.deprecated/write-a-prd-linear
 ```
 
 * write-a-prd-gitlab — Create a PRD through an interactive interview, codebase exploration, and module design. Filed as a GitLab work item in the current project.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/write-a-prd-gitlab
+npx skills@latest add patriksimms/skills/.deprecated/write-a-prd-gitlab
 ```
 
 * write-symphony-issue — Draft Symphony-ready GitLab issues with acceptance criteria and validation steps, then create them with `glab` after human confirmation.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/write-symphony-issue
+npx skills@latest add patriksimms/skills/.deprecated/write-symphony-issue
 ```
 
 * prd-to-issues — Break a PRD into independently-grabbable todoist tasks using vertical slices. Creates linear sub
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/prd-to-issues-todoist
+npx skills@latest add patriksimms/skills/.deprecated/prd-to-issues-todoist
 ```
 
 * prd-to-issues-linear — Break a PRD into independently linear issues using vertical slices.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/prd-to-issues-linear
+npx skills@latest add patriksimms/skills/.deprecated/prd-to-issues-linear
 ```
 
 * prd-to-issues-gitlab — Break a PRD into independently-grabbable GitLab work items using vertical slices.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/prd-to-issues-gitlab
+npx skills@latest add patriksimms/skills/.deprecated/prd-to-issues-gitlab
 ```
 
 * grill-me - Get relentlessly interviewed about a plan or design until every branch of the decision tree is resolved.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/grill-me
+npx skills@latest add patriksimms/skills/.deprecated/grill-me
 ```
 
 * grill-with-docs - Stress-test a plan against the project's domain language and documented decisions, updating `CONTEXT.md` and ADRs as decisions crystallise.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/grill-with-docs
+npx skills@latest add patriksimms/skills/.deprecated/grill-with-docs
 ```
 
 * tdd-ralph - Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time. Can work AFK in a ralph loop
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/tdd-ralph
+npx skills@latest add patriksimms/skills/.deprecated/tdd-ralph
 ```
 
 * triage-issue-linear - Investigate a bug by exploring the codebase, identify the root cause, and file a Linear issue with a TDD-based fix plan.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/triage-issue-linear
+npx skills@latest add patriksimms/skills/.deprecated/triage-issue-linear
 ```
 
 * triage-issue-todoist - Investigate a bug by exploring the codebase, identify the root cause, and file a todoist task with a TDD-based fix plan.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/triage-issue-todoist
+npx skills@latest add patriksimms/skills/.deprecated/triage-issue-todoist
 ```
 
 * triage-issue-gitlab - Investigate a bug by exploring the codebase, identify the root cause, and file a GitLab work item with a TDD-based fix plan.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/triage-issue-gitlab
+npx skills@latest add patriksimms/skills/.deprecated/triage-issue-gitlab
 ```
 
 ## Development Workflow
@@ -87,25 +87,25 @@ npx skills@latest add patriksimms/skills/deprecated/triage-issue-gitlab
 * debug - Investigate stuck runs and execution failures by tracing Symphony and Codex logs with issue/session identifiers.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/debug
+npx skills@latest add patriksimms/skills/.deprecated/debug
 ```
 
 * land - Land an MR by monitoring conflicts, resolving them, waiting for checks, and squash-merging when green.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/land
+npx skills@latest add patriksimms/skills/.deprecated/land
 ```
 
 * pull - Pull latest origin/main into the current local branch and resolve merge conflicts.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/pull
+npx skills@latest add patriksimms/skills/.deprecated/pull
 ```
 
 * push - Push current branch changes to origin and create or update the corresponding merge request.
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/push
+npx skills@latest add patriksimms/skills/.deprecated/push
 ```
 
 ## Ralph
@@ -119,10 +119,10 @@ Install:
 ```sh
 git clone git@github.com:patriksimms/skills.git
 cd skills
-install -m 755 deprecated/ralph-linear.sh ~/.local/bin/ralph-linear
-install -m 755 deprecated/ralph-linear-codex.sh ~/.local/bin/ralph-linear-codex
-install -m 755 deprecated/ralph-gitlab-codex.sh ~/.local/bin/ralph-gitlab-codex
-install -m 755 deprecated/ralph-todoist-codex.sh ~/.local/bin/ralph-todoist-codex
+install -m 755 .deprecated/ralph-linear.sh ~/.local/bin/ralph-linear
+install -m 755 .deprecated/ralph-linear-codex.sh ~/.local/bin/ralph-linear-codex
+install -m 755 .deprecated/ralph-gitlab-codex.sh ~/.local/bin/ralph-gitlab-codex
+install -m 755 .deprecated/ralph-todoist-codex.sh ~/.local/bin/ralph-todoist-codex
 ```
 
 Set in your projects folder environment, e.g. with https://direnv.net/:
@@ -148,7 +148,7 @@ ralph-linear 2 # max iterations
 Install the skills used by the worker in the Codex environment or profile that will run the loop:
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/tdd-ralph
+npx skills@latest add patriksimms/skills/.deprecated/tdd-ralph
 npx skills@latest add patriksimms/skills/commit
 ```
 
@@ -181,7 +181,7 @@ This maps to Codex CLI's `model_reasoning_effort` config key.
 Install the skills used by the worker in the Codex environment or profile that will run the loop:
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/tdd-ralph
+npx skills@latest add patriksimms/skills/.deprecated/tdd-ralph
 npx skills@latest add patriksimms/skills/commit
 ```
 
@@ -209,7 +209,7 @@ Todoist task dependencies are read from a `## Blocked by` section containing `#<
 Install the skills used by the worker in the Codex environment or profile that will run the loop:
 
 ```sh
-npx skills@latest add patriksimms/skills/deprecated/tdd-ralph
+npx skills@latest add patriksimms/skills/.deprecated/tdd-ralph
 npx skills@latest add patriksimms/skills/commit
 ```
 

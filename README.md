@@ -6,7 +6,7 @@ The skills use CLIs such as `td`, `linear`, and `glab` for using task management
 
 > This is heavily inspired from https://github.com/mattpocock/skills
 
-Skills and commands that are no longer actively maintained are available in the [deprecated folder](./deprecated/README.md).
+Skills and commands that are no longer actively maintained are available in the [deprecated folder](./.deprecated/README.md).
 
 ## Planning & Design
 
