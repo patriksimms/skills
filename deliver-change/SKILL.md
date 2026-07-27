@@ -44,7 +44,18 @@ Use one vocabulary for the run:
 
 Create a concise tracking item containing `Outcome`, `Scope`, `Acceptance criteria`, and the scenario matrix where useful. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
 
-Create a short branch from the current default branch in the existing working directory, then create a linked draft change request:
+Create a short branch from the current default branch and check it out in a dedicated git worktree, so the original working directory and its uncommitted changes stay untouched:
+
+1. Update the default branch reference: `git fetch origin <default-branch>`.
+2. Create the branch and worktree in one step: `git worktree add <worktree-path> -b <branch> origin/<default-branch>`.
+3. Place `<worktree-path>` outside the repository working tree (for example a sibling directory named after the branch), or in a path the repository already ignores.
+4. Change into `<worktree-path>` and treat it as the working directory for every remaining step.
+
+Record `<worktree-path>` and `<branch>`; both are needed for cleanup in step 7.
+
+If the project requires local setup that is not shared through the repository — dependency install, `.envrc`/`direnv allow`, generated files, or linked local services — run it inside the worktree before implementing.
+
+Then create a linked draft change request from inside the worktree:
 
 - GitHub: `gh pr create --draft` with `Closes #<issue-number>`.
 - GitLab: `glab mr create --draft --related-issue <work-item-iid>`.
@@ -52,6 +63,8 @@ Create a short branch from the current default branch in the existing working di
 Include the outcome and planned validation in the description.
 
 ## 4. Implement and preflight
+
+Run every command in this step and the remaining steps from the worktree created in step 3.
 
 Trace the complete affected path before editing, including state ownership, memoization, persistence, API or modal payload construction, and existing tests. Implement the smallest coherent end-to-end change satisfying the contract.
 
@@ -96,7 +109,7 @@ Use the `review-code` skill. Reviews return candidates; the delivery owner decid
 
 After the first green run, start one isolated review thread. When subagents are available, use no inherited conversation turns (`fork_turns="none"`). Provide only:
 
-- repository path and forge
+- worktree path and forge
 - change-request number and URL
 - target branch and reviewed HEAD SHA
 - tracking-item number and URL
@@ -114,7 +127,7 @@ Do not upgrade a finding merely because it is labelled actionable. Post only con
 
 ### Fix blocking findings once as a batch
 
-If blockers exist, start one isolated fix thread with no inherited conversation turns. Give it only the repository, forge, change request, tracking item, reviewed SHA, and blocking discussion IDs. For each finding, choose:
+If blockers exist, start one isolated fix thread with no inherited conversation turns. Give it only the worktree path, forge, change request, tracking item, reviewed SHA, and blocking discussion IDs, and require it to work inside that worktree. For each finding, choose:
 
 - **Accept:** reply with intent, fix and test, invoke `commit`, push, reply with the SHA, and resolve.
 - **Rebut:** reply with concrete spec or code evidence and resolve without changing code.
@@ -135,9 +148,19 @@ If it finds a new blocker caused by the fix, correct it and run targeted local v
 
 The normal review budget is one full review and one delta verification. Exceed it only for an unresolved high-risk correctness, security, privacy, or data-loss issue, and tell the user why.
 
-## 7. Hand off
+## 7. Hand off and remove the worktree
 
-Mark the draft ready with the forge-supported command or API. Report:
+Mark the draft ready with the forge-supported command or API.
+
+Only after the change request is published, green, and ready for review, remove the worktree:
+
+1. Confirm the worktree is clean and fully pushed: `git -C <worktree-path> status --porcelain` is empty and the branch has no unpushed commits.
+2. From the original repository directory, run `git worktree remove <worktree-path>`.
+3. Keep the branch — the change request depends on it. Do not use `--force` and do not delete the branch.
+
+If step 1 reveals uncommitted or unpushed work, finish delivering it first. If the worktree cannot be removed cleanly, leave it in place and report the path and reason instead of forcing removal.
+
+Report:
 
 - tracking-item and change-request URLs
 - delivered behavior
@@ -146,5 +169,6 @@ Mark the draft ready with the forge-supported command or API. Report:
 - blocking findings and resolutions
 - non-blocking suggestions, if any
 - whether the full review and delta verification were clean
+- that the worktree was removed, or the path and reason if it was kept
 
 Leave the change request unmerged for human review.
