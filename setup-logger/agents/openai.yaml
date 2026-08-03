@@ -1,0 +1,4 @@
+interface:
+  display_name: "Setup Logger"
+  short_description: "Standardize LogTape logging for Node and Bun"
+  default_prompt: "Use $setup-logger to add or migrate standardized logging in this TypeScript project."

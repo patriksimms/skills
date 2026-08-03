@@ -24,6 +24,12 @@ npx skills@latest add patriksimms/skills/product-discovery
 npx skills@latest add patriksimms/skills/setup-ts-project
 ```
 
+* setup-logger - Set up or migrate standardized LogTape logging for TypeScript Node.js and Bun applications.
+
+```sh
+npx skills@latest add patriksimms/skills/setup-logger
+```
+
 ## Development Workflow
 
 These skills help with day-to-day git and debugging workflows.
