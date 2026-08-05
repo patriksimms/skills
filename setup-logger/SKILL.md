@@ -105,11 +105,11 @@ Infer the migration from the project rather than applying a fixed Pino rewrite:
 2. Translate child/bound logger state into component categories or `withLogContext()` as appropriate.
 3. Preserve any real redaction or serialization behavior; do not retain incidental Pino mechanics.
 4. Remove `pino`, `pino-pretty`, transports, scripts, and configuration only after no runtime or development path uses them.
-5. Update tests to assert behavior rather than Pino implementation details.
+5. Do not add dedicated tests for the logger. If existing tests depend on Pino implementation details, update only those tests as needed to keep them behavior-focused.
 
 ## Verify
 
-Use the project's formatter, type checker, tests, and lint commands. Add focused tests that capture the configured destination and verify:
+Use the project's formatter, type checker, existing tests, and lint commands. It is not necessary to write tests for the logger. Verify with targeted manual checks that:
 
 - production emits one valid JSON object per line with flattened context;
 - development output is human-readable and contains ANSI color unless `NO_COLOR` is set;
