@@ -78,6 +78,8 @@ The visual-evidence step is complete when the tracking item contains the minimal
 
 Add behavior-focused tests at the lowest level that proves the behavior. Use existing end-to-end infrastructure when the changed journey is already covered there.
 
+Keep tests proportional to the diff. Test changed behavior and material regression risk; do not add coverage for unchanged adjacent paths.
+
 Before publishing:
 
 1. Map every acceptance criterion and scenario to implementation or test evidence.

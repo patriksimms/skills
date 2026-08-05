@@ -48,6 +48,8 @@ Trace each acceptance criterion through implementation, state transitions, tests
 - material unrequested scope with risk
 - tests that pass without proving the required behavior
 
+Verify that the diff is the smallest reasonable implementation of the spec. Prefer removing unnecessary behavior, files, abstractions, state, or configuration over improving them.
+
 Exercise sequences, not only isolated predicates: state change, filtering, retry, persistence, failure, narrowing/widening, payload creation, and deselection where relevant.
 
 For frontend changes with matched screenshots, compare the after state with the observable requirements and use the before state to verify the claimed change. Treat screenshots as supporting evidence, not a substitute for exercising interactive behavior or unpictured states.
