@@ -89,12 +89,18 @@ function getLocalFormatter(useColor: boolean): TextFormatter {
 
         const properties = inspect(record.properties, {
             colors: useColor,
-            compact: false,
+            compact: 3,
             depth: 10,
             breakLength: 120,
         });
-        return `${message}\n  ${properties.replaceAll("\n", "\n  ")}\n`;
+        if (!properties.includes("\n")) return `${message} ${properties}\n`;
+        return `${message}\n  ${properties.split("\n").join("\n  ")}\n`;
     };
+}
+
+/** LogTape treats braces in string messages as property placeholders. */
+function escapeMessageTemplate(message: string): string {
+    return message.split("{").join("{{").split("}").join("}}");
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -179,7 +185,7 @@ function prepareCall(args: unknown[]): PreparedCall {
 export default class Logger {
     readonly #logger: LogTapeLogger;
 
-    constructor(name: string) {
+    constructor(name: string | readonly string[]) {
         this.#logger = getLogger(name);
     }
 
@@ -213,7 +219,7 @@ export default class Logger {
         const logger = this.#logger;
         const method = logger[methodName] as unknown as (...methodArgs: unknown[]) => void;
 
-        if (call.propertiesOnly) method.call(logger, properties);
-        else method.call(logger, call.message, properties);
+        if ("message" in call) method.call(logger, escapeMessageTemplate(call.message), properties);
+        else method.call(logger, properties);
     }
 }

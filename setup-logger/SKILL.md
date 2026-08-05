@@ -19,6 +19,15 @@ Establish one consistent LogTape setup while preserving the target project's use
 
 Read and copy [`assets/Logger.ts`](assets/Logger.ts). Treat it as the behavioral baseline, then adapt import paths, file naming, and environment types to the project.
 
+For NestJS applications, also read and copy [`assets/NestLogger.ts`](assets/NestLogger.ts). Pass `new NestLogger()` as Nest's system logger. Do not forward Nest's final `context` argument as a structured property: the adapter turns it into a `Nest.<context>` logger category. This keeps startup logs compact and searchable. The canonical `Logger` also escapes literal braces before handing arbitrary messages to LogTape; this is required for Nest route messages such as `Mapped {/healthcheck, GET} route`, because LogTape otherwise interprets the route as a missing placeholder and renders `undefined`.
+
+```ts
+configureLogger();
+const app = await NestFactory.create(AppModule, {
+  logger: new NestLogger(),
+});
+```
+
 Keep these interfaces where existing projects use them:
 
 - `new Logger("component")`
@@ -34,6 +43,7 @@ Install `@logtape/logtape` with the project's existing package manager. The asse
 - For `NODE_ENV=production`, write newline-delimited JSON to `process.stdout`.
 - For `NODE_ENV=test`, disable logs by default.
 - For every other `NODE_ENV`, write human-readable output with ANSI colors. Honor `NO_COLOR`.
+- Keep small structured property objects on the same local output line; indent only values that actually span multiple lines.
 - Use `debug` as the local minimum level and `info` as the production minimum level.
 - Keep structured properties at the JSON root so Loki can parse and filter them directly.
 - Reserve `@timestamp`, `level`, `message`, and `logger` for the formatter.
@@ -119,5 +129,7 @@ Use the project's formatter, type checker, existing tests, and lint commands. It
 - logging works when OpenTelemetry is not installed;
 - operation context survives awaited asynchronous work;
 - worker and subprocess receivers re-establish explicitly propagated context.
+- arbitrary messages containing literal braces survive unchanged, including Nest route mapping messages;
+- Nest system logs use their context as the logger category and do not repeat a `component` property block.
 
 Inspect representative local and production output manually. Ensure no secrets, authorization headers, tokens, or full sensitive request bodies were introduced during migration.
