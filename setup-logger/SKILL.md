@@ -21,6 +21,8 @@ Read and copy [`assets/Logger.ts`](assets/Logger.ts). Treat it as the behavioral
 
 For NestJS applications, also read and copy [`assets/NestLogger.ts`](assets/NestLogger.ts). Pass `new NestLogger()` as Nest's system logger. Do not forward Nest's final `context` argument as a structured property: the adapter turns it into a `Nest.<context>` logger category. This keeps startup logs compact and searchable. The canonical `Logger` also escapes literal braces before handing arbitrary messages to LogTape; this is required for Nest route messages such as `Mapped {/healthcheck, GET} route`, because LogTape otherwise interprets the route as a missing placeholder and renders `undefined`.
 
+The adapter preserves Nest's threshold-based `setLogLevels()` behavior, where enabling `warn` also permits `error` and `fatal`. It maps Nest's `verbose` level to LogTape `debug`, because the canonical local configuration intentionally uses `debug` as its minimum level.
+
 ```ts
 configureLogger();
 const app = await NestFactory.create(AppModule, {
@@ -131,5 +133,6 @@ Use the project's formatter, type checker, existing tests, and lint commands. It
 - worker and subprocess receivers re-establish explicitly propagated context.
 - arbitrary messages containing literal braces survive unchanged, including Nest route mapping messages;
 - Nest system logs use their context as the logger category and do not repeat a `component` property block.
+- Nest log-level overrides retain threshold semantics, and enabled `verbose` messages are visible locally.
 
 Inspect representative local and production output manually. Ensure no secrets, authorization headers, tokens, or full sensitive request bodies were introduced during migration.

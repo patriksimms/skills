@@ -45,9 +45,7 @@ export function configureLogger(configuration: LoggerConfiguration = {}): void {
     const isProduction = nodeEnvironment === "production";
     const isTest = nodeEnvironment === "test";
     const useColor = !isProduction && !("NO_COLOR" in process.env);
-    const formatter = isProduction
-        ? getJsonLinesFormatter({ properties: "flatten" })
-        : getLocalFormatter(useColor);
+    const formatter = isProduction ? getProductionFormatter() : getLocalFormatter(useColor);
 
     traceContextProvider = configuration.getTraceContext;
 
@@ -95,6 +93,19 @@ function getLocalFormatter(useColor: boolean): TextFormatter {
         });
         if (!properties.includes("\n")) return `${message} ${properties}\n`;
         return `${message}\n  ${properties.split("\n").join("\n  ")}\n`;
+    };
+}
+
+function getProductionFormatter(): TextFormatter {
+    const jsonLinesFormatter = getJsonLinesFormatter({ properties: "flatten" });
+    const reservedFields = new Set(["@timestamp", "level", "message", "logger"]);
+
+    return (record: LogRecord): string => {
+        const properties: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(record.properties)) {
+            properties[reservedFields.has(key) ? `property.${key}` : key] = value;
+        }
+        return jsonLinesFormatter({ ...record, properties });
     };
 }
 
