@@ -13,6 +13,7 @@ Inspect the repository before asking questions. Ask one concise batch containing
 
 Restate and ask the user to confirm:
 
+- user problem and journey, not only the proposed implementation
 - outcome and observable behavior
 - in-scope and out-of-scope behavior & changes
 - acceptance criteria
@@ -53,14 +54,16 @@ GOOD
 > ✅ feat(server): Add opt-in read-only Outline MCP integration
 > ✅ feat(server): Inject pinned MCP server instructions into chat system prompts
 
-Open the tracking item with a simple explanation of the `problem` based on the users prompt & context given, then briefly explain the `solution`. When possible frame them from the user perspective as a classic User story. Example:
+If the user provides an issue or work item, reuse it as the tracking item. Do not create a duplicate. Refine its acceptance criteria through an edit or comment only when needed. Create a new tracking item only when none exists.
+
+Open or refine the tracking item with a simple explanation of the `problem` based on the user's prompt and context, then briefly explain the `solution`. When possible, frame them from the user perspective as a classic user story. Example:
 
 ```md
 ## Problem
 As a user of esomeLM I want the MCP servers instructions to be included in the LLM System prompt automatically to be able to include arbitrary MCP servers without having to adjust the System prompt in esomeLM every time.
 ```
 
-Also include concise `In-Scope` and `Out-of-Scope` areas, the concise `Acceptance Critera` and a scenario matrix where useful. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
+Also include concise `In-Scope` and `Out-of-Scope` areas, concise `Acceptance Criteria`, and a scenario matrix where useful. Use `gh issue create` on GitHub only when a new issue is needed. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
 
 Create a short branch from the current default branch and check it out in a dedicated git worktree, so the original working directory and its uncommitted changes stay untouched:
 
@@ -90,7 +93,10 @@ When the contract requires frontend changes, create matched visual evidence:
 
 1. Before editing the frontend, capture the affected UI in its current state.
 2. After implementation, capture the same route, viewport, data, and UI state wherever possible.
-3. Attach the before and after screenshots, clearly labelled, to the tracking item. Start with one matched pair; add another only when a distinct route, viewport, or state needed to demonstrate the change cannot be shown by an existing pair.
+3. Visually inspect every screenshot before uploading it. Check that it shows the intended state, matches the actual application, and contains no misleading errors or unrelated visual changes.
+4. Attach the before and after screenshots, clearly labelled, to the tracking item. Start with one matched pair; add another only when a distinct route, viewport, or state needed to demonstrate the change cannot be shown by an existing pair.
+
+Synthetic fixtures cannot prove appearance unless they preserve the real application shell and layout. Label synthetic evidence explicitly. For cross-cutting UI changes such as themes, inspect representative route types: shell or navigation, form or editor, and data or report view.
 
 The visual-evidence step is complete when the tracking item contains the minimal set of matched before/after screenshots needed to show every materially changed frontend state.
 
@@ -105,6 +111,7 @@ Before publishing:
 3. Inspect the diff for accidental formatting, dependency, generated-file, and lockfile churn.
 4. Run focused tests first, then the project's required local gates.
 5. Record advisory or pre-existing failures accurately without treating them as change-caused blockers.
+6. Explicitly record changes outside the repository that are required for complete deployment from the local environment through production. Examples include CI/CD variables set through GitLab, Keycloak client settings, secret names, redirect URIs, permissions, and other environment-specific configuration. Treat these examples as prompts for discovery, not a complete checklist.
 
 Do not introduce a new framework or broad refactor only to satisfy a preference when a smaller project-consistent solution is adequate.
 
@@ -147,6 +154,8 @@ For each candidate, independently confirm its evidence and classify it:
 
 Do not upgrade a finding merely because it is labelled actionable. Post only confirmed blocking findings as `[codex]` discussions, inline when a stable position exists. Summarize non-blocking suggestions in the handoff; do not create resolvable threads for them.
 
+Confirm the defect independently, but do not inherit the reviewer's proposed solution. Re-derive the smallest project-consistent fix. If a review fix materially expands files, concepts, or runtime state, perform a scope check before implementing it.
+
 ### Fix blocking findings once as a batch
 
 If blockers exist, start one isolated fix thread with no inherited conversation turns. Give it only the worktree path, forge, change request, tracking item, reviewed SHA, and blocking discussion IDs, and require it to work inside that worktree. For each finding, choose:
@@ -187,6 +196,7 @@ Report:
 - tracking-item and change-request URLs
 - delivered behavior
 - frontend before/after evidence attached to the tracking item, when applicable
+- changes outside the repository required for complete deployment, or an explicit statement that none are required
 - required validation and latest green commit
 - blocking findings and resolutions
 - non-blocking suggestions, if any
