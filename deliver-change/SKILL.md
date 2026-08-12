@@ -1,6 +1,6 @@
 ---
 name: deliver-change
-description: Deliver an end-to-end GitHub or GitLab change from a clarified outcome through a tracking item, draft pull or merge request, implementation, tests, required green checks, and a bounded independent review. Use when the user asks Codex to implement and shepherd a change until it is ready for human review.
+description: Deliver an end-to-end change to a product/ project from a clarified outcome. Use when the user asks the agent to implement and shepherd a change until it is ready for human review.
 ---
 
 # Deliver Change
@@ -14,7 +14,7 @@ Inspect the repository before asking questions. Ask one concise batch containing
 Restate and ask the user to confirm:
 
 - outcome and observable behavior
-- in-scope and out-of-scope behavior
+- in-scope and out-of-scope behavior & changes
 - acceptance criteria
 - product or technical decisions
 - expected test coverage
@@ -42,7 +42,25 @@ Use one vocabulary for the run:
 | GitHub | `gh auth status` and `gh repo view` | issue | pull request |
 | GitLab | `glab auth status` and `glab repo view` | work item | merge request |
 
-Create a concise tracking item containing `Outcome`, `Scope`, `Acceptance criteria`, and the scenario matrix where useful. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
+Prefer a concise, human-readable title that explains why the change matters:
+
+BAD
+> ❌ perf(server): negotiate permassage-deflate on the websocket
+> ❌ feat(server): Lock MCP server selection after chat generation
+
+GOOD
+> ✅ perf(server): cut websocket frame size by 70%+ with gzipping
+> ✅ feat(server): Add opt-in read-only Outline MCP integration
+> ✅ feat(server): Inject pinned MCP server instructions into chat system prompts
+
+Open the tracking item with a simple explanation of the `problem` based on the users prompt & context given, then briefly explain the `solution`. When possible frame them from the user perspective as a classic User story. Example:
+
+```md
+## Problem
+As a user of esomeLM I want the MCP servers instructions to be included in the LLM System prompt automatically to be able to include arbitrary MCP servers without having to adjust the System prompt in esomeLM every time.
+```
+
+Also include concise `In-Scope` and `Out-of-Scope` areas, the concise `Acceptance Critera` and a scenario matrix where useful. Use `gh issue create` on GitHub. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
 
 Create a short branch from the current default branch and check it out in a dedicated git worktree, so the original working directory and its uncommitted changes stay untouched:
 
@@ -60,7 +78,7 @@ Then create a linked draft change request from inside the worktree:
 - GitHub: `gh pr create --draft` with `Closes #<issue-number>`.
 - GitLab: `glab mr create --draft --related-issue <work-item-iid>`.
 
-Include the outcome and planned validation in the description.
+Include the outcome and planned validation in the description of the PR/ MR.
 
 ## 4. Implement and preflight
 
@@ -109,7 +127,7 @@ Use the `review-code` skill. Reviews return candidates; the delivery owner decid
 
 ### First review
 
-After the first green run, start one isolated review thread. When subagents are available, use no inherited conversation turns (`fork_turns="none"`). Provide only:
+After the first green run, start one fresh, context-isolated review agent. Do not inherit or summarize the implementation conversation. Give it only:
 
 - worktree path and forge
 - change-request number and URL
@@ -117,6 +135,8 @@ After the first green run, start one isolated review thread. When subagents are 
 - tracking-item number and URL
 - project gate summary
 - for frontend changes, labels and attachment URLs for the matched before/after screenshots
+
+When the client exposes conversation-inheritance controls, disable inherited turns (`fork_turns="none"` in Codex). In Claude Code, use a normal named subagent, not a conversation fork or resumed agent.
 
 Ask for a full `review-code` review of `<target-branch>...<reviewed-HEAD>` and candidate findings without modifying code or posting comments.
 
