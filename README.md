@@ -46,6 +46,12 @@ npx skills@latest add patriksimms/skills/deliver-change
 npx skills@latest add patriksimms/skills/review-code
 ```
 
+* renovate-review - Review and harden Renovate dependency upgrades, add missing behavioral protection, and grant narrowly scoped automerge when earned.
+
+```sh
+npx skills@latest add patriksimms/skills/renovate-review
+```
+
 * commit - Create a well-formed git commit from current changes using session history for rationale and summary.
 
 ```sh

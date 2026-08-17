@@ -1,0 +1,4 @@
+interface:
+  display_name: "Renovate Review"
+  short_description: "Review dependency upgrades and earn automerge"
+  default_prompt: "Use $renovate-review to assess this Renovate MR, add missing behavioral coverage, and enable safe minor automerge when earned."
