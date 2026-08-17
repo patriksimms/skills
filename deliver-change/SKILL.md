@@ -40,12 +40,14 @@ Do not invent a gate the project does not configure. Preserve unrelated working-
 
 ## 3. Open the work
 
+Detect the forge without printing remote URLs. Capture `git remote get-url origin` inside the shell command, classify it as GitHub, GitLab, or unknown, and output only that classification. Never run `git remote -v` or otherwise emit a credential-bearing remote URL. Let the first real forge operation verify access; use `gh auth status` or `glab auth status` only to diagnose a failed operation.
+
 Use one vocabulary for the run:
 
-| Forge | Verify access | Tracking item | Change request |
-| --- | --- | --- | --- |
-| GitHub | `gh auth status` and `gh repo view` | issue | pull request |
-| GitLab | `glab auth status` and `glab repo view` | work item | merge request |
+| Forge | Tracking item | Change request |
+| --- | --- | --- |
+| GitHub | issue | pull request |
+| GitLab | work item | merge request |
 
 Prefer a concise, human-readable title that explains why the change matters:
 
@@ -69,7 +71,9 @@ As a user of esomeLM I want the MCP servers instructions to be included in the L
 
 Also include concise `In-Scope` and `Out-of-Scope` areas, concise `Acceptance Criteria`, and a scenario matrix where useful. Use `gh issue create` on GitHub only when a new issue is needed. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
 
-Create a short branch from the current default branch and check it out in a dedicated git worktree, so the original working directory and its uncommitted changes stay untouched:
+If the user provides an existing pull or merge request, use it as the change request. Inspect its source branch and target branch, fetch the exact source ref, and create the dedicated worktree from that source branch. Preserve its existing tracking relationship and push target. Skip new tracking-item, branch, and change-request creation unless the requested work is materially separate from the existing change.
+
+For a new change request, create a short branch from the current default branch and check it out in a dedicated git worktree, so the original working directory and its uncommitted changes stay untouched:
 
 1. Update the default branch reference: `git fetch origin <default-branch>`.
 2. Create the branch and worktree in one step: `git worktree add <worktree-path> -b <branch> origin/<default-branch>`.
@@ -80,7 +84,7 @@ Record `<worktree-path>` and `<branch>`; both are needed for cleanup in step 7.
 
 If the project requires local setup that is not shared through the repository — dependency install, `.envrc`/`direnv allow`, generated files, or linked local services — run it inside the worktree before implementing.
 
-Then create a draft change request from inside the worktree, linking the tracking item when one exists:
+For a new change request, create it as a draft from inside the worktree, linking the tracking item when one exists:
 
 - GitHub: `gh pr create --draft`; include `Closes #<issue-number>` when applicable.
 - GitLab: `glab mr create --draft`; include `--related-issue <work-item-iid>` when applicable.
@@ -123,10 +127,10 @@ Do not introduce a new framework or broad refactor only to satisfy a preference 
 
 Invoke the `commit` skill to commit only the intended changes, including the tracking-item reference when one exists. Push the branch and update the change-request description when implementation or validation differs from the plan.
 
-Watch checks for the exact pushed commit:
+Watch checks for the exact pushed commit with the forge's low-chatter wait mode. Let the watcher finish instead of manually polling it in parallel:
 
-- GitHub: `gh pr checks --watch`; inspect failures with `gh run view <run-id> --log-failed`.
-- GitLab: `glab ci status --branch <branch> --live`; inspect failures with `glab ci trace <job-id>`.
+- GitHub: `gh pr checks --watch --interval 60`; inspect failures with `gh run view <run-id> --log-failed`.
+- GitLab: `glab ci status --branch <branch> --wait`; inspect failures with `glab ci trace <job-id>`.
 
 Fix a failure only when evidence connects it to the change. Rerun relevant local checks, invoke the `commit` skill, push, and watch the replacement pipeline. For infrastructure, credentials, service, network, or documented baseline failures outside the change, report the evidence; stop only when a required gate cannot complete.
 
@@ -164,7 +168,7 @@ Confirm the defect independently, but do not inherit the reviewer's proposed sol
 
 ### Fix blocking findings once as a batch
 
-If blockers exist, start one isolated fix thread with no inherited conversation turns. Give it only the worktree path, forge, change request, tracking item when one exists, reviewed SHA, and blocking discussion IDs, and require it to work inside that worktree. For each finding, choose:
+If blockers exist, fix them as the delivery owner in the existing worktree. Keep implementation in the main delivery context; do not delegate it to the reviewer or a fresh fix agent. For each finding, choose:
 
 - **Accept:** reply with intent, fix and test, invoke `commit`, push, reply with the SHA, and resolve.
 - **Rebut:** reply with concrete spec or code evidence and resolve without changing code.
