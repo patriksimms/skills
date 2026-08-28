@@ -1,0 +1,4 @@
+interface:
+  display_name: "Post Review Comments"
+  short_description: "Publish review findings as inline PR/MR comments"
+  default_prompt: "Use $post-review-comments to post these review findings on the pull or merge request."

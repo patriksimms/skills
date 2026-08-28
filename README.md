@@ -46,6 +46,12 @@ npx skills@latest add patriksimms/skills/deliver-change
 npx skills@latest add patriksimms/skills/review-code
 ```
 
+* post-review-comments - Post review findings onto a GitHub pull request or GitLab merge request as inline diff comments, rolling up overarching findings into one top-level comment.
+
+```sh
+npx skills@latest add patriksimms/skills/post-review-comments
+```
+
 * renovate-review - Review and harden Renovate dependency upgrades, add missing behavioral protection, and grant narrowly scoped automerge when earned.
 
 ```sh
