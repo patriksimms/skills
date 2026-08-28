@@ -5,7 +5,7 @@ description: Review a branch, pull request, merge request, or work-in-progress d
 
 # Review Code
 
-Review a fixed diff for merge-relevant risk. Keep Standards and Spec investigations independent, then curate their output into one risk-ranked report. Remain read-only unless the caller explicitly requests comments or changes.
+Review a fixed diff for merge-relevant risk. Keep Standards and Spec investigations independent, then curate their output into one risk-ranked report. Remain read-only unless the caller explicitly requests comments or changes. Important: Tautological tests considered harmful!
 
 ## 1. Pin the review
 
