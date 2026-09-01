@@ -34,7 +34,7 @@ npx skills@latest add patriksimms/skills/setup-logger
 
 These skills help with day-to-day git and debugging workflows.
 
-* deliver-change - Deliver a GitHub or GitLab change from a clarified outcome through implementation, tests, green checks, and review loops until the pull or merge request is ready for human review.
+* deliver-change - Deliver a GitHub or GitLab change from a clarified outcome through implementation, tests, green checks, and review loops, including configured code-review bots, until the pull or merge request is ready for human review.
 
 ```sh
 npx skills@latest add patriksimms/skills/deliver-change

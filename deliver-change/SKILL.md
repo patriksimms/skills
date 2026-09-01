@@ -5,7 +5,7 @@ description: Deliver an end-to-end change to a product/ project from a clarified
 
 # Deliver Change
 
-Own a change until its pull or merge request is green and ready for human review. Leave it unmerged. Prefer correctness and a compact, reviewable change over opportunistic cleanup.
+Own a change until its pull or merge request is green, every configured code-review bot is clean, and it is ready for human review. Leave it unmerged. Prefer correctness and a compact, reviewable change over opportunistic cleanup.
 
 Every delivery uses a dedicated branch and pull or merge request containing only that change. Use a separate worktree to isolate it from existing work. These are delivery invariants, not optional ceremony.
 
@@ -189,7 +189,23 @@ If it finds a new blocker caused by the fix, correct it and run targeted local v
 
 The normal review budget is one full review and one delta verification. Exceed it only for an unresolved high-risk correctness, security, privacy, or data-loss issue, and tell the user why.
 
-## 7. Hand off and remove the worktree
+## 7. Clear configured code-review bots
+
+After the independent review, babysit code-review bots configured for the project, including Macroscope and CodeRabbit. Treat a bot as configured when repository files, forge checks, repository instructions, or activity on the change request show that it participates. Do not summon a bot that has no such evidence.
+
+For each configured bot, learn its review identity, completion signal, and supported re-review mechanism from the project configuration or the bot's existing check, review, or comment. Do not guess account names or commands.
+
+Run this loop without an iteration cap:
+
+1. Wait for every configured bot to finish reviewing the latest HEAD. A quiet comment stream is not evidence of completion.
+2. Collect every current finding from checks, reviews, top-level comments, and unresolved threads. Do not silently defer style or suggestion-level findings as non-blocking.
+3. Verify each finding against the contract and code. Fix valid findings in one coherent batch with proportionate tests. Rebut invalid findings with concrete evidence and resolve or dismiss them through the forge or bot-supported mechanism. Ask the user only when a finding requires a product decision or new authority.
+4. When code changed, invoke the `commit` skill, push, and rerun the required project gates. After every batch, including rebut-only batches, request a fresh bot review using the bot's supported mechanism when it does not start automatically.
+5. Repeat for the new HEAD whenever a push or fresh review produces findings.
+
+This gate passes only when required checks are green and every configured bot's latest completed review cycle against the latest HEAD produces no findings and leaves no unresolved threads. A completed review of an older commit, a pending bot, or a bot summary that still lists findings does not pass. If a bot cannot complete because its service, credentials, or forge integration is unavailable, keep the change request in draft and report the blocker instead of treating the bot as clean.
+
+## 8. Hand off and remove the worktree
 
 Mark the draft ready with the forge-supported command or API.
 
@@ -209,6 +225,7 @@ Report:
 - changes outside the repository required for complete deployment, or an explicit statement that none are required
 - required validation and latest green commit
 - blocking findings and resolutions
+- configured code-review bots and their clean result for the latest commit
 - non-blocking suggestions, if any
 - whether independent review was omitted as proportionate, or whether the full review and delta verification were clean
 - that the worktree was removed, or the path and reason if it was kept
