@@ -26,7 +26,7 @@ Ask the user if this is a gitlab project. If yes, please add these 2 jobs. Also 
 
 ```yaml
 variables:
-  BUN_VERSION: 1.3.10
+  BUN_VERSION: 1.4.2
 
 test:
   stage: test
