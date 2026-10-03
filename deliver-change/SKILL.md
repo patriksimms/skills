@@ -7,7 +7,7 @@ description: Deliver an end-to-end change to a product/ project from a clarified
 
 Own a change until its pull or merge request is green, every configured code-review bot is clean, and it is ready for human review. Leave it unmerged. Prefer correctness and a compact, reviewable change over opportunistic cleanup.
 
-Every delivery uses a dedicated branch and pull or merge request containing only that change. Use a separate worktree to isolate it from existing work. These are delivery invariants, not optional ceremony.
+Every delivery uses a dedicated branch and pull or merge request containing only that change. Work in the directory and branch provided by the harness. Leave worktree creation and cleanup to the harness.
 
 Apply every other workflow step only when it reduces a material delivery risk or is required by the repository, user, or forge. Do not create artifacts, tests, abstractions, evidence, or coordination steps solely because this workflow lists them.
 
@@ -71,20 +71,13 @@ As a user of esomeLM I want the MCP servers instructions to be included in the L
 
 Also include concise `In-Scope` and `Out-of-Scope` areas, concise `Acceptance Criteria`, and a scenario matrix where useful. Use `gh issue create` on GitHub only when a new issue is needed. On GitLab, prefer `glab work-items create --type issue` and fall back to `glab issue create`. Pass Markdown with actual newline characters.
 
-If the user provides an existing pull or merge request, use it as the change request. Inspect its source branch and target branch, fetch the exact source ref, and create the dedicated worktree from that source branch. Preserve its existing tracking relationship and push target. Skip new tracking-item, branch, and change-request creation unless the requested work is materially separate from the existing change.
+If the user provides an existing pull or merge request, use it as the change request. Inspect its source branch and target branch, fetch the exact source ref, and ensure the current checkout contains that source before editing. Preserve local changes, its existing tracking relationship, and push target. Skip new tracking-item, branch, and change-request creation unless the requested work is materially separate from the existing change.
 
-For a new change request, create a short branch from the current default branch and check it out in a dedicated git worktree, so the original working directory and its uncommitted changes stay untouched:
+For a new change request, reuse the dedicated branch provided by the harness. If no dedicated branch exists, fetch the current default branch and create a short branch from it in the current working directory, preserving local changes.
 
-1. Update the default branch reference: `git fetch origin <default-branch>`.
-2. Create the branch and worktree in one step: `git worktree add <worktree-path> -b <branch> origin/<default-branch>`.
-3. Place `<worktree-path>` outside the repository working tree (for example a sibling directory named after the branch), or in a path the repository already ignores.
-4. Change into `<worktree-path>` and treat it as the working directory for every remaining step.
+If the project requires local setup, such as dependency installation, `.envrc`/`direnv allow`, generated files, or linked local services, run it in the current working directory before implementing.
 
-Record `<worktree-path>` and `<branch>`; both are needed for cleanup in step 7.
-
-If the project requires local setup that is not shared through the repository — dependency install, `.envrc`/`direnv allow`, generated files, or linked local services — run it inside the worktree before implementing.
-
-For a new change request, create it as a draft from inside the worktree, linking the tracking item when one exists:
+For a new change request, create it as a draft, linking the tracking item when one exists:
 
 - GitHub: `gh pr create --draft`; include `Closes #<issue-number>` when applicable.
 - GitLab: `glab mr create --draft`; include `--related-issue <work-item-iid>` when applicable.
@@ -93,7 +86,7 @@ Include the outcome and planned validation in the description of the PR/ MR.
 
 ## 4. Implement and preflight
 
-Run every command in this step and the remaining steps from the worktree created in step 3.
+Use the same working directory for implementation, validation, and review fixes.
 
 Trace the complete affected path before editing, including state ownership, memoization, persistence, API or modal payload construction, and existing tests. Implement the smallest coherent end-to-end change satisfying the contract.
 
@@ -146,7 +139,7 @@ Reviews return candidates; the delivery owner decides what is blocking before an
 
 After the first green run, start one fresh, context-isolated review agent. Do not inherit or summarize the implementation conversation. Give it only:
 
-- worktree path and forge
+- working directory and forge
 - change-request number and URL
 - target branch and reviewed HEAD SHA
 - tracking-item number and URL, when one exists
@@ -168,7 +161,7 @@ Confirm the defect independently, but do not inherit the reviewer's proposed sol
 
 ### Fix blocking findings once as a batch
 
-If blockers exist, fix them as the delivery owner in the existing worktree. Keep implementation in the main delivery context; do not delegate it to the reviewer or a fresh fix agent. For each finding, choose:
+If blockers exist, fix them as the delivery owner in the same working directory. Keep implementation in the main delivery context; do not delegate it to the reviewer or a fresh fix agent. For each finding, choose:
 
 - **Accept:** reply with intent, fix and test, invoke `commit`, push, reply with the SHA, and resolve.
 - **Rebut:** reply with concrete spec or code evidence and resolve without changing code.
@@ -205,17 +198,11 @@ Run this loop without an iteration cap:
 
 This gate passes only when required checks are green and every configured bot's latest completed review cycle against the latest HEAD produces no findings and leaves no unresolved threads. A completed review of an older commit, a pending bot, or a bot summary that still lists findings does not pass. If a bot cannot complete because its service, credentials, or forge integration is unavailable, keep the change request in draft and report the blocker instead of treating the bot as clean.
 
-## 8. Hand off and remove the worktree
+## 8. Hand off
 
 Mark the draft ready with the forge-supported command or API.
 
-Only after the change request is published, green, and ready for review, remove the worktree:
-
-1. Confirm the worktree is clean and fully pushed: `git -C <worktree-path> status --porcelain` is empty and the branch has no unpushed commits.
-2. From the original repository directory, run `git worktree remove <worktree-path>`.
-3. Keep the branch — the change request depends on it. Do not use `--force` and do not delete the branch.
-
-If step 1 reveals uncommitted or unpushed work, finish delivering it first. If the worktree cannot be removed cleanly, leave it in place and report the path and reason instead of forcing removal.
+Confirm all intended changes are committed and pushed. Preserve unrelated local changes and keep the branch for the change request.
 
 Report:
 
@@ -228,6 +215,5 @@ Report:
 - configured code-review bots and their clean result for the latest commit
 - non-blocking suggestions, if any
 - whether independent review was omitted as proportionate, or whether the full review and delta verification were clean
-- that the worktree was removed, or the path and reason if it was kept
 
 Leave the change request unmerged for human review.
