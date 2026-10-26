@@ -90,7 +90,7 @@ npx skills@latest add patriksimms/skills/.deprecated/triage-issue-gitlab
 npx skills@latest add patriksimms/skills/.deprecated/debug
 ```
 
-* land - Land an MR by monitoring conflicts, resolving them, waiting for checks, and squash-merging when green.
+* land - Land an MR by monitoring conflicts, resolving them, waiting for checks, and squash-merging when green. For the maintained workflow that leaves requests unmerged, use [deliver-change](../deliver-change/SKILL.md) and [babysit-pr](../babysit-pr/SKILL.md).
 
 ```sh
 npx skills@latest add patriksimms/skills/.deprecated/land
