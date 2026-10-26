@@ -33,19 +33,42 @@ If the user has reserved assignment and triggering for themselves, leave those a
 
 Also watch other configured review bots when the project requires them. If Duo is unavailable because of permissions, licensing, or integration configuration, report the blocker rather than silently skipping it.
 
-## Monitor and fix
+## Waiting
 
-Maintain one monitoring owner for each request. Prefer a harness-managed watcher that resumes this workflow when checks, reviews, or conflicts change. Register the request with the harness when supported. A watcher registration or an asynchronous yield means monitoring is pending, not that babysitting has completed. If no managed watcher exists, poll forge state about every 60 seconds with interruptible waits. Keep consuming the loop until a completion or blocker condition occurs; leave no detached watcher behind.
+Use one monitoring owner per request. Handle current failures and feedback before waiting. A wake-up or successful watcher exit is a reason to refresh forge state, not proof of readiness.
 
-Use low-chatter CI waits when appropriate, while continuing to collect review feedback through the monitoring owner:
+### In T3 Code
 
-- GitHub: `gh pr checks <number> --watch --interval 60`. Inspect failed jobs with `gh run view <run-id> --log-failed` or the job logs API when the overall run is still pending.
-- GitLab: `glab ci status --branch <branch> --wait`. Inspect failed jobs with `glab ci trace <job-id>`. Associate the pipeline with the request's latest SHA, especially when branch and merge-request pipelines both exist.
+Link the request with `link_pull_request`. For GitHub, call `watch_pull_request` once actionable work is handled, then end the turn. Resume this workflow on the next event. Delivery remains pending across those turns.
+
+Only the owning thread watches. Delegated children return the request URL, reviewed SHA, findings, and pending state to their parent without starting a watcher. Never run a CLI watcher alongside the managed watcher.
+
+Call `unwatch_pull_request` before a ready or blocked handoff, or before asking the user a question. This returns the thread to the user's inbox. Merge or closure ends the watch automatically.
+
+If watching fails, inspect the error before registering again. For GitHub rate-limit errors, inspect `gh api rate_limit`; honor the exhausted resource's reset time with one resumable wait. Repeated registration attempts consume the same quota. REST reads may remain available when GraphQL is exhausted, but cannot replace the missing review-thread data with an assumed clean result.
+
+For GitLab, first check whether the harness explicitly supports merge-request monitoring. Otherwise use the GitLab path below; do not assume GitHub watch tools accept GitLab URLs.
+
+### Outside managed GitHub monitoring
+
+Use an existing event watcher, such as tstack's `pr-wait`, as the sole watcher. This skill does not bundle that helper. Locate an installed copy and inspect its help before invoking it by absolute path; do not invent a local `scripts/pr-wait` path or write a replacement polling script.
+
+The upstream helper's `ready` mode recognizes Greptile or Macroscope, not our required CodeRabbit review. Use a supported event mode such as `any-change`, then evaluate this skill's completion criteria yourself. Resume the same watcher after handling events, pushing fixes, or resuming the session. Do not duplicate an active watcher whose output still reaches this task. If no compatible watcher is available, report the missing monitoring capability rather than claiming continuous coverage.
+
+### GitLab without managed monitoring
+
+Use `glab ci status --branch <branch> --wait` for the current pipeline. It waits for CI, not Duo reviews. Verify its SHA because branch and merge-request pipelines can coexist. Prefer an existing merge-request event watcher for subsequent review updates. When none exists, the owning session may recheck review and request state with interruptible waits of about 60 seconds. Keep that single session active until ready or blocked; do not create a detached polling process or add another CI watcher.
+
+With every path, stay quiet on unchanged or irrelevant events. Report actions, new blockers, or completion. Do not post filler comments or repeat waiting messages.
+
+## Reviews and CI
+
+Use `gh run view <run-id> --log-failed` or individual job logs to diagnose GitHub failures. Use `glab ci trace <job-id>` on GitLab. Inspect the failing job even if other jobs are still running.
 
 On each update:
 
 1. Refresh request state, HEAD, CI, published feedback, and mergeability. Stop if merged or closed.
-2. Collect current bot findings from checks, reviews, comments, and unresolved threads. Verify each against the contract and code, including style and suggestion-level findings. Resolve valid findings in a coherent batch. Rebut invalid findings with concrete evidence through an authorized bot-supported mechanism. A finding still awaiting a decision remains unresolved.
+2. Collect bot findings from checks, reviews, comments, and unresolved threads, including findings that predate the latest push. Verify them against the current code before acting. Fix in-scope defects in one batch. For false positives or suggestions outside the agreed scope, record a concrete reason through an authorized bot-supported mechanism and resolve eligible threads. A finding still awaiting a decision remains unresolved.
 3. Inspect failed job logs before deciding whether to fix or retry. Fix failures caused by this branch. For a transient infrastructure or external-service failure, retry the failed jobs at most three times for the same failing check and SHA. Track attempts across monitoring resumptions. Report persistent infrastructure failures or exhausted retries as blockers; avoid changing code to mask them.
 4. For each code batch, run proportionate local checks, invoke the `commit` skill, and push. Address review changes before rerunning CI on a SHA that will be replaced. For material correctness changes, invoke `review-code` for focused local verification of the fix.
 5. Resolve eligible bot threads only after verifying the fix or rebuttal. After every batch, including rebut-only batches, obtain a fresh review cycle when the bot does not start one automatically. Follow the GitLab assignment and trigger rules above for Duo.
@@ -53,14 +76,24 @@ On each update:
 
 Treat human feedback as evidence to assess alongside bot feedback. Fix clear, in-scope defects, but get explicit authorization before posting replies to other people or resolving their threads. Surface decisions that need the user's judgment with the relevant comment link. Leave unrelated suggestions for the handoff unless they block a required gate.
 
-Keep updates concise. Report state changes, fixes, new review findings, and genuine blockers. Do not ask whether to keep watching while work remains pending.
+Keep the change within the user's goal. Assess each suggestion for a defect in the intended behavior before adding tests, abstractions, compatibility, edge-case guards, or optimizations. Explain declined suggestions and include useful follow-ups in the handoff; review feedback alone does not authorize expanding scope.
+
+For Macroscope findings that cite `.macroscope/check-run-agents/*.md`, read the relevant repository rules before responding.
+
+## Base branch and readiness
+
+Fetch the actual target branch before the final readiness check. Compare it with the base used by the latest green run. Inspect both forge mergeability and commits that landed on the target while this request was under review; a conflict-only watcher cannot establish that the tested base is still current.
+
+When required by branch protection, when conflicts exist, or when new base commits affect this change's files or behavior, update the source branch using the repository's merge or rebase policy. Preserve unrelated work and avoid overwriting another contributor's commits. Use a lease if an authorized rebase requires a force push. If safe integration requires a new decision or authority, report the blocker. After updating, rerun local gates, push, and obtain fresh CI and bot-review evidence for the new HEAD. Being behind on unrelated base commits alone does not require a rebase unless the project requires an up-to-date branch.
+
+If another change supersedes this request, stop watching and explain the overlap. Ask before closing it unless closure was already authorized.
 
 ## Completion and blockers
 
 Report ready only after a final fresh forge read confirms all of the following for the same latest HEAD:
 
 - All required checks passed. Advisory or documented baseline failures are identified separately.
-- The forge confirms there are no merge conflicts. Report outstanding human approvals separately, since this handoff is for human review.
+- The forge confirms there are no merge conflicts, and the base-branch checks above pass. Report outstanding human approvals separately, since this handoff is for human review.
 - CodeRabbit on GitHub or Duo on GitLab, plus every other required configured bot, completed its latest review cycle with no remaining findings or unresolved threads. A stale summary that still lists findings needs a fresh clean cycle.
 - No actionable published human feedback remains unaddressed.
 - All intended fixes are committed and pushed.
@@ -70,3 +103,5 @@ A successful result is ready for human review, not merged. Keep watching while c
 Stop with an incomplete result when user action is required, such as a manual Duo trigger, an unresolved product decision, missing permissions, unavailable review integration, an exhausted CI retry budget, or a conflict that cannot be resolved within the agreed scope. Distinguish this from ready. If merged or closed externally, report that terminal state.
 
 Stop or unregister the watcher when handing back a terminal result. Return the request URL, final SHA, CI summary, mergeability, review completion evidence, fixes pushed, retries used, and any remaining blockers. `deliver-change` may hand off only after a ready result; pending monitoring or a blocker does not count as successful completion.
+
+Adapted from [tstack babysit-pr](https://github.com/t3dotgg/tstack/blob/main/skills/babysit-pr/SKILL.md), with required CodeRabbit and Duo review gates and GitLab support.
