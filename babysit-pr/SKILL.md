@@ -105,7 +105,7 @@ Report ready only after a final fresh forge read confirms all of the following f
 - CodeRabbit on GitHub or Duo on GitLab, plus every other required configured bot, completed its latest review cycle with no remaining findings or unresolved threads. A stale summary that still lists findings needs a fresh clean cycle.
 - No actionable published human feedback remains unaddressed.
 - All intended fixes are committed and pushed.
-- When a local-review baseline was supplied, the final cumulative delta review and any targeted follow-up verification above are complete, with their SHAs recorded.
+- When a local-review baseline was supplied, either final HEAD equals that already reviewed baseline, or the final cumulative delta review and any targeted follow-up verification above are complete. Record the baseline and verified SHAs in either case.
 
 A successful result is ready for human review, not merged. Keep watching while checks or reviews are queued, running, or merely quiet. Do not merge, close, or change draft status unless separately authorized by the calling workflow or user. If draft status prevents required review, report that specific dependency before changing it.
 
