@@ -34,10 +34,16 @@ npx skills@latest add patriksimms/skills/setup-logger
 
 These skills help with day-to-day git and debugging workflows.
 
-* deliver-change - Deliver a GitHub or GitLab change from a clarified outcome through implementation, tests, green checks, and review loops, including configured code-review bots, until the pull or merge request is ready for human review.
+* deliver-change - Deliver a GitHub or GitLab change from a clarified outcome through implementation, tests, required local review, and the babysit-pr CI and bot-review loop, until the pull or merge request is ready for human review.
 
 ```sh
 npx skills@latest add patriksimms/skills/deliver-change
+```
+
+* babysit-pr - Monitor GitHub or GitLab checks and review feedback until the latest commit is ready for human review, with CodeRabbit on GitHub and GitLab Duo on GitLab.
+
+```sh
+npx skills@latest add patriksimms/skills/babysit-pr
 ```
 
 * review-code - Review a branch, pull request, merge request, or work-in-progress diff, then deduplicate and risk-rank evidence-backed findings into blocking and non-blocking results.

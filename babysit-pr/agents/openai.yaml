@@ -1,0 +1,4 @@
+interface:
+  display_name: "Babysit PR"
+  short_description: "Watch GitHub and GitLab CI and bot reviews"
+  default_prompt: "Use $babysit-pr to monitor this pull or merge request until checks and remote reviews are clean."

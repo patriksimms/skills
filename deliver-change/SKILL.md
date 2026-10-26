@@ -116,28 +116,21 @@ Before publishing:
 
 Do not introduce a new framework or broad refactor only to satisfy a preference when a smaller project-consistent solution is adequate.
 
-## 5. Publish and reach green
+## 5. Publish
 
 Invoke the `commit` skill to commit only the intended changes, including the tracking-item reference when one exists. Push the branch and update the change-request description when implementation or validation differs from the plan.
 
-Watch checks for the exact pushed commit with the forge's low-chatter wait mode. Let the watcher finish instead of manually polling it in parallel:
+Remote CI and bot review belong to the `babysit-pr` skill in step 7. Publishing alone does not complete delivery.
 
-- GitHub: `gh pr checks --watch --interval 60`; inspect failures with `gh run view <run-id> --log-failed`.
-- GitLab: `glab ci status --branch <branch> --wait`; inspect failures with `glab ci trace <job-id>`.
+## 6. Run a bounded independent local review
 
-Fix a failure only when evidence connects it to the change. Rerun relevant local checks, invoke the `commit` skill, push, and watch the replacement pipeline. For infrastructure, credentials, service, network, or documented baseline failures outside the change, report the evidence; stop only when a required gate cannot complete.
-
-This gate passes when all required checks for the latest commit succeed.
-
-## 6. Run a bounded independent review when warranted
-
-Use the `review-code` skill when the repository or user requires independent review, or when the change carries material correctness, security, privacy, data-loss, compatibility, cross-cutting, or state-transition risk. For a routine low-risk change, inspect the final diff yourself and omit the independent agent review. Record the omission in the handoff.
+Always invoke the `review-code` skill for an independent local review of the change before handoff, including routine low-risk changes. Remote bot reviews do not replace this review.
 
 Reviews return candidates; the delivery owner decides what is blocking before anything is posted or changed.
 
 ### First review
 
-After the first green run, start one fresh, context-isolated review agent. Do not inherit or summarize the implementation conversation. Give it only:
+After required local checks pass, start one fresh, context-isolated review agent. Do not inherit or summarize the implementation conversation. Give it only:
 
 - working directory and forge
 - change-request number and URL
@@ -171,7 +164,7 @@ Avoid concurrent code edits. After the batch, rerun required checks.
 
 ### Delta verification
 
-Run at most one independent delta review from the previously reviewed SHA to the new HEAD. It must:
+Run at most one independent delta review from the previously reviewed SHA to the new HEAD. When remote fixes are still expected, defer this cumulative delta verification to the final local-review gate in `babysit-pr`. It must:
 
 - verify accepted blockers and their regression tests
 - inspect only changed lines plus directly affected behavior
@@ -182,25 +175,17 @@ If it finds a new blocker caused by the fix, correct it and run targeted local v
 
 The normal review budget is one full review and one delta verification. Exceed it only for an unresolved high-risk correctness, security, privacy, or data-loss issue, and tell the user why.
 
-## 7. Clear configured code-review bots
+## 7. Complete babysit-pr
 
-After the independent review, babysit code-review bots configured for the project, including Macroscope and CodeRabbit. Treat a bot as configured when repository files, forge checks, repository instructions, or activity on the change request show that it participates. Do not summon a bot that has no such evidence.
+Invoke the `babysit-pr` skill explicitly for this pull or merge request. Load its installed `SKILL.md`, or [../babysit-pr/SKILL.md](../babysit-pr/SKILL.md) in this repository. If it is unavailable, report the missing dependency instead of substituting a one-shot status check.
 
-For each configured bot, learn its review identity, completion signal, and supported re-review mechanism from the project configuration or the bot's existing check, review, or comment. Do not guess account names or commands.
+Pass the change-request URL, source branch, latest pushed SHA, required project gates, local review outcome, and the exact last independently locally reviewed SHA. Tell the user that `babysit-pr` is now handling CI and remote review. It owns the monitoring, failure diagnosis, review-fix, commit, push, and re-review loop, including GitLab Duo and GitHub CodeRabbit.
 
-Run this loop without an iteration cap:
-
-1. Wait for every configured bot to finish reviewing the latest HEAD. A quiet comment stream is not evidence of completion.
-2. Collect every current finding from checks, reviews, top-level comments, and unresolved threads. Do not silently defer style or suggestion-level findings as non-blocking.
-3. Verify each finding against the contract and code. Fix valid findings in one coherent batch with proportionate tests. Rebut invalid findings with concrete evidence and resolve or dismiss them through the forge or bot-supported mechanism. Ask the user only when a finding requires a product decision or new authority.
-4. When code changed, invoke the `commit` skill, push, and rerun the required project gates. After every batch, including rebut-only batches, request a fresh bot review using the bot's supported mechanism when it does not start automatically.
-5. Repeat for the new HEAD whenever a push or fresh review produces findings.
-
-This gate passes only when required checks are green and every configured bot's latest completed review cycle against the latest HEAD produces no findings and leaves no unresolved threads. A completed review of an older commit, a pending bot, or a bot summary that still lists findings does not pass. If a bot cannot complete because its service, credentials, or forge integration is unavailable, keep the change request in draft and report the blocker instead of treating the bot as clean.
+Wait until `babysit-pr` reports ready for the latest HEAD before proceeding to handoff. Starting a watcher, a green CI snapshot, or a fix push does not complete this step. When the harness resumes monitoring across turns, keep delivery pending until the completion criteria are met. Report a genuine blocker as incomplete delivery and leave a draft in draft. If the request is merged or closed externally, report that terminal state instead of marking it ready.
 
 ## 8. Hand off
 
-Mark the draft ready with the forge-supported command or API.
+Only after `babysit-pr` completes successfully, mark the draft ready with the forge-supported command or API. If that starts previously deferred checks or bot reviews, resume `babysit-pr` and wait for their results before returning.
 
 Confirm all intended changes are committed and pushed. Preserve unrelated local changes and keep the branch for the change request.
 
@@ -212,8 +197,8 @@ Report:
 - changes outside the repository required for complete deployment, or an explicit statement that none are required
 - required validation and latest green commit
 - blocking findings and resolutions
-- configured code-review bots and their clean result for the latest commit
+- `babysit-pr` completion, including configured code-review bots and their clean result for the latest commit
 - non-blocking suggestions, if any
-- whether independent review was omitted as proportionate, or whether the full review and delta verification were clean
+- independent local review outcome and delta verification outcome when fixes required one
 
 Leave the change request unmerged for human review.
