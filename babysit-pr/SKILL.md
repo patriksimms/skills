@@ -13,7 +13,7 @@ Accept a pull or merge request URL or number, or infer the request from the curr
 
 Work on the request's source branch in the provided checkout. Preserve unrelated changes. Before mutating remote state, refresh it directly from the forge rather than relying on an old watcher snapshot.
 
-Record the latest pushed SHA, required gates, bot review identities, review completion signals, and unresolved published feedback. Include existing unresolved feedback on the first pass. Ignore unpublished pending reviews until submitted. A quiet comment stream does not prove a review has finished.
+Record the latest pushed SHA, the last independently locally reviewed SHA when supplied by the caller, required gates, bot review identities, review completion signals, and unresolved published feedback. Include existing unresolved feedback on the first pass. Ignore unpublished pending reviews until submitted. A quiet comment stream does not prove a review has finished.
 
 ## Start the forge review
 
@@ -88,6 +88,14 @@ When required by branch protection, when conflicts exist, or when new base commi
 
 If another change supersedes this request, stop watching and explain the overlap. Ask before closing it unless closure was already authorized.
 
+## Final local delta review
+
+When a caller supplies a locally reviewed SHA and HEAD has changed, wait until remote fixes settle, then invoke `review-code` once for an independent delta review of `<last-locally-reviewed-SHA>..<final-HEAD-SHA>`. Pin both SHAs and cover every cumulative change, including non-material bot fixes and base-branch integration. Per-batch local reviews remain limited to material correctness changes; do not start a full review or a separate delta review for each batch.
+
+Coordinate this final delta with the caller's bounded review budget, deferring its delta verification until remote fixes settle when possible. Fix confirmed blockers and verify those fixes with targeted local checks. If HEAD changes after the pinned review, assess the additional delta before handoff and record its verification; reopen independent review only for an unresolved high-risk issue under the caller's review rules. Resume CI and remote reviews for every new pushed SHA.
+
+The caller retains responsibility for the initial full local review. Standalone babysitting without a supplied local-review baseline must report that limitation rather than claim independent local-review coverage.
+
 ## Completion and blockers
 
 Report ready only after a final fresh forge read confirms all of the following for the same latest HEAD:
@@ -97,11 +105,12 @@ Report ready only after a final fresh forge read confirms all of the following f
 - CodeRabbit on GitHub or Duo on GitLab, plus every other required configured bot, completed its latest review cycle with no remaining findings or unresolved threads. A stale summary that still lists findings needs a fresh clean cycle.
 - No actionable published human feedback remains unaddressed.
 - All intended fixes are committed and pushed.
+- When a local-review baseline was supplied, the final cumulative delta review and any targeted follow-up verification above are complete, with their SHAs recorded.
 
 A successful result is ready for human review, not merged. Keep watching while checks or reviews are queued, running, or merely quiet. Do not merge, close, or change draft status unless separately authorized by the calling workflow or user. If draft status prevents required review, report that specific dependency before changing it.
 
 Stop with an incomplete result when user action is required, such as a manual Duo trigger, an unresolved product decision, missing permissions, unavailable review integration, an exhausted CI retry budget, or a conflict that cannot be resolved within the agreed scope. Distinguish this from ready. If merged or closed externally, report that terminal state.
 
-Stop or unregister the watcher when handing back a terminal result. Return the request URL, final SHA, CI summary, mergeability, review completion evidence, fixes pushed, retries used, and any remaining blockers. `deliver-change` may hand off only after a ready result; pending monitoring or a blocker does not count as successful completion.
+Stop or unregister the watcher when handing back a terminal result. Return the request URL, final SHA, local-review baseline and verified SHAs when applicable, CI summary, mergeability, review completion evidence, fixes pushed, retries used, and any remaining blockers. `deliver-change` may hand off only after a ready result; pending monitoring or a blocker does not count as successful completion.
 
 Adapted from [tstack babysit-pr](https://github.com/t3dotgg/tstack/blob/main/skills/babysit-pr/SKILL.md), with required CodeRabbit and Duo review gates and GitLab support.

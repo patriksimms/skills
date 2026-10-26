@@ -164,7 +164,7 @@ Avoid concurrent code edits. After the batch, rerun required checks.
 
 ### Delta verification
 
-Run at most one independent delta review from the previously reviewed SHA to the new HEAD. It must:
+Run at most one independent delta review from the previously reviewed SHA to the new HEAD. When remote fixes are still expected, defer this cumulative delta verification to the final local-review gate in `babysit-pr`. It must:
 
 - verify accepted blockers and their regression tests
 - inspect only changed lines plus directly affected behavior
@@ -179,7 +179,7 @@ The normal review budget is one full review and one delta verification. Exceed i
 
 Invoke the `babysit-pr` skill explicitly for this pull or merge request. Load its installed `SKILL.md`, or [../babysit-pr/SKILL.md](../babysit-pr/SKILL.md) in this repository. If it is unavailable, report the missing dependency instead of substituting a one-shot status check.
 
-Pass the change-request URL, source branch, latest pushed SHA, required project gates, and local review outcome. Tell the user that `babysit-pr` is now handling CI and remote review. It owns the monitoring, failure diagnosis, review-fix, commit, push, and re-review loop, including GitLab Duo and GitHub CodeRabbit.
+Pass the change-request URL, source branch, latest pushed SHA, required project gates, local review outcome, and the exact last independently locally reviewed SHA. Tell the user that `babysit-pr` is now handling CI and remote review. It owns the monitoring, failure diagnosis, review-fix, commit, push, and re-review loop, including GitLab Duo and GitHub CodeRabbit.
 
 Wait until `babysit-pr` reports ready for the latest HEAD before proceeding to handoff. Starting a watcher, a green CI snapshot, or a fix push does not complete this step. When the harness resumes monitoring across turns, keep delivery pending until the completion criteria are met. Report a genuine blocker as incomplete delivery and leave a draft in draft. If the request is merged or closed externally, report that terminal state instead of marking it ready.
 
