@@ -67,7 +67,7 @@ Use `gh run view <run-id> --log-failed` or individual job logs to diagnose GitHu
 
 On each update:
 
-1. Refresh request state, HEAD, CI, published feedback, and mergeability. Stop if merged or closed. If the forge HEAD differs from the latest SHA pushed from this checkout, fetch and inspect it before any remote mutation; continue only on that commit when it is an intended change, otherwise report the mismatch.
+1. Refresh request state, HEAD, CI, published feedback, and mergeability. Stop if merged or closed. If the forge HEAD differs from the latest SHA pushed from this checkout, fetch and inspect it, then stop before any remote mutation and report the mismatch.
 2. Collect bot findings from checks, reviews, comments, and unresolved threads, including findings that predate the latest push. Verify them against the current code before acting. Fix in-scope defects in one batch. For false positives or suggestions outside the agreed scope, record a concrete reason through an authorized bot-supported mechanism and resolve eligible threads. A finding still awaiting a decision remains unresolved.
 3. Inspect failed job logs before deciding whether to fix or retry. Fix failures caused by this branch. For a transient infrastructure or external-service failure, retry the failed jobs at most three times for the same failing check and SHA. Track attempts across monitoring resumptions. Report persistent infrastructure failures or exhausted retries as blockers; avoid changing code to mask them.
 4. For each code batch, run proportionate local checks, invoke the `commit` skill, and push. Address review changes before rerunning CI on a SHA that will be replaced. For material correctness changes, invoke `review-code` for focused local verification of the fix.
