@@ -73,16 +73,23 @@ Also include concise `In-Scope` and `Out-of-Scope` areas, concise `Acceptance Cr
 
 If the user provides an existing pull or merge request, use it as the change request. Inspect its source branch and target branch, fetch the exact source ref, and ensure the current checkout contains that source before editing. Preserve local changes, its existing tracking relationship, and push target. Skip new tracking-item, branch, and change-request creation unless the requested work is materially separate from the existing change.
 
-For a new change request, reuse the dedicated branch provided by the harness. If no dedicated branch exists, fetch the current default branch and create a short branch from it in the current working directory, preserving local changes.
+For a new change request, reuse the dedicated branch provided by the harness. If no dedicated branch exists, fetch the current default branch and create a short branch from it in the current working directory, preserving local changes. Harnesses such as T3 Code may rename that branch during the session, so read the current name with `git branch --show-current` whenever you push or create the change request, never from earlier context.
 
 If the project requires local setup, such as dependency installation, `.envrc`/`direnv allow`, generated files, or linked local services, run it in the current working directory before implementing.
 
-For a new change request, create it as a draft, linking the tracking item when one exists:
+For a new change request, push the current branch first, then create the request as a draft from that exact branch, linking the tracking item when one exists:
 
-- GitHub: `gh pr create --draft`; include `Closes #<issue-number>` when applicable.
-- GitLab: `glab mr create --draft`; include `--related-issue <work-item-iid>` when applicable.
+```sh
+branch=$(git branch --show-current)
+git push -u origin "$branch"
+```
+
+- GitHub: `gh pr create --draft --head "$branch"`; include `Closes #<issue-number>` in the description when applicable.
+- GitLab: `glab mr create --draft --source-branch "$branch"`; include `Closes #<work-item-iid>` or `Related to #<work-item-iid>` in the description when applicable. Do not use `--related-issue`: without an explicit source branch it silently creates a new, empty branch from the default branch.
 
 Include the outcome and planned validation in the description of the PR/ MR.
+
+Immediately confirm that the change request's head SHA (`gh pr view --json headRefOid` or `glab mr view <iid> -F json` `.sha`) equals `git rev-parse HEAD`. If it does not, stop and fix the source branch before any review or monitoring.
 
 ## 4. Implement and preflight
 
