@@ -11,7 +11,7 @@ Own CI and remote review until the latest pushed commit is green, mergeable, and
 
 Accept a pull or merge request URL or number, or infer the request from the current branch. Use `gh` for GitHub and `glab` for GitLab. Inspect repository instructions, required checks, source and target branches, and current HEAD. Read remote configuration without printing credential-bearing URLs.
 
-Work on the request's source branch in the provided checkout. Preserve unrelated changes. Before mutating remote state, refresh it directly from the forge rather than relying on an old watcher snapshot.
+Work on the request's source branch in the provided checkout. Confirm that the request's head SHA from the forge equals the latest SHA pushed from this checkout. A mismatch means the request points at a different branch or the push did not land; report it and fix the source branch before monitoring, because CI and bot reviews would otherwise cover the wrong code. Preserve unrelated changes. Before mutating remote state, refresh it directly from the forge rather than relying on an old watcher snapshot.
 
 Record the latest pushed SHA, the last independently locally reviewed SHA when supplied by the caller, required gates, bot review identities, review completion signals, and unresolved published feedback. Include existing unresolved feedback on the first pass. Ignore unpublished pending reviews until submitted. A quiet comment stream does not prove a review has finished.
 
