@@ -67,7 +67,7 @@ Use `gh run view <run-id> --log-failed` or individual job logs to diagnose GitHu
 
 On each update:
 
-1. Refresh request state, HEAD, CI, published feedback, and mergeability. Stop if merged or closed.
+1. Refresh request state, HEAD, CI, published feedback, and mergeability. Stop if merged or closed. If the forge HEAD differs from the latest SHA pushed from this checkout, fetch and inspect it before any remote mutation; continue only on that commit when it is an intended change, otherwise report the mismatch.
 2. Collect bot findings from checks, reviews, comments, and unresolved threads, including findings that predate the latest push. Verify them against the current code before acting. Fix in-scope defects in one batch. For false positives or suggestions outside the agreed scope, record a concrete reason through an authorized bot-supported mechanism and resolve eligible threads. A finding still awaiting a decision remains unresolved.
 3. Inspect failed job logs before deciding whether to fix or retry. Fix failures caused by this branch. For a transient infrastructure or external-service failure, retry the failed jobs at most three times for the same failing check and SHA. Track attempts across monitoring resumptions. Report persistent infrastructure failures or exhausted retries as blockers; avoid changing code to mask them.
 4. For each code batch, run proportionate local checks, invoke the `commit` skill, and push. Address review changes before rerunning CI on a SHA that will be replaced. For material correctness changes, invoke `review-code` for focused local verification of the fix.
@@ -104,7 +104,7 @@ Report ready only after a final fresh forge read confirms all of the following f
 - The forge confirms there are no merge conflicts, and the base-branch checks above pass. Report outstanding human approvals separately, since this handoff is for human review.
 - CodeRabbit on GitHub or Duo on GitLab, plus every other required configured bot, completed its latest review cycle with no remaining findings or unresolved threads. A stale summary that still lists findings needs a fresh clean cycle.
 - No actionable published human feedback remains unaddressed.
-- All intended fixes are committed and pushed.
+- All intended fixes are committed and pushed, and the forge HEAD equals the latest SHA pushed from this checkout.
 - When a local-review baseline was supplied, either final HEAD equals that already reviewed baseline, or the final cumulative delta review and any targeted follow-up verification above are complete. Record the baseline and verified SHAs in either case.
 
 A successful result is ready for human review, not merged. Keep watching while checks or reviews are queued, running, or merely quiet. Do not merge, close, or change draft status unless separately authorized by the calling workflow or user. If draft status prevents required review, report that specific dependency before changing it.
